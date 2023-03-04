@@ -59,7 +59,7 @@ Phrase: Hello, world! I'm ready for you!
   presence_penalty: 0,
   user: 'test',
 },
-  result => console.log(JSON.stringify(result), null, '    '),
+  result => console.log(JSON.stringify(result, null, '    ')),
   console.error,
 );
 ```
