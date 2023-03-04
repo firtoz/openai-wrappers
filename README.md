@@ -8,6 +8,39 @@ To use this package, you will need an API key from OpenAI. You can sign up for a
 
 For more information on how to use this package, see the documentation below.
 
+## Usage:
+
+```ts
+import { getChatCompletionSimple } from '@firtoz/openai-wrappers';
+import { Configuration, OpenAIApi } from 'openai';
+
+const openai = new OpenAIApi(new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+}));
+
+getChatCompletionSimple(
+  openai,
+  [{
+    role: 'user',
+    name: 'System',
+    content: `Please translate this phrase to French.
+
+Phrase: Hello, world! I'm ready for you!
+`,
+  }], {
+  temperature: 0.9,
+  top_p: 0.9,
+  frequency_penalty: 0,
+  presence_penalty: 0,
+  user: 'test',
+}).then(result => console.log({ result }));
+```
+
+Should print:
+```ts
+{ result: 'Bonjour, monde! Je suis prêt pour toi!' }
+```
+
 ## OpenAI Completion Functions
 
 ### `getCompletionAdvanced`
