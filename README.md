@@ -80,6 +80,233 @@ Will print:
 }
 ```
 
+<details>
+<summary>
+Streaming
+</summary>
+
+Code:
+```ts
+getChatCompletionAdvanced(
+  openai,
+  [{
+    role: 'user',
+    name: 'System',
+    content: `Please translate this phrase to French.
+
+Phrase: Hello, world! I'm ready for you!
+`,
+  }], {
+  temperature: 0.9,
+  top_p: 0.9,
+  frequency_penalty: 0,
+  presence_penalty: 0,
+  user: 'test',
+  stream: true,
+},
+  result => console.log(JSON.stringify(result, null, '  ')),
+  console.error,
+);
+```
+
+Will print:
+```ts
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+          "object": "chat.completion.chunk",
+          "created": 1677938704,
+          "model": "gpt-3.5-turbo-0301",
+          "choices": [
+    {
+      "delta": {
+        "role": "assistant"
+      },
+      "index": 0,
+      "finish_reason": null
+    }
+  ]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": "Bonjour"
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": ","
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": " monde"
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": "!"
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": " Je"
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": " suis"
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": " pr"
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": "êt"
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": " pour"
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": " toi"
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {
+      "content": "!"
+    },
+    "index": 0,
+    "finish_reason": null
+  }
+]
+}
+{
+  "id": "chatcmpl-6qMnQVnscsXNbjcajTTg2ibLuxFJz",
+        "object": "chat.completion.chunk",
+        "created": 1677938704,
+        "model": "gpt-3.5-turbo-0301",
+        "choices": [
+  {
+    "delta": {},
+    "index": 0,
+    "finish_reason": "stop"
+  }
+]
+}
+```
+</details>
+
 ## OpenAI Completion Functions
 
 ### `getCompletionAdvanced`
