@@ -6,6 +6,9 @@
     "build": "yarn tsc && echo build complete",
     "test": "echo no tests && exit 0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "typescript",
     "openai",
