@@ -41,6 +41,45 @@ Should print:
 { result: 'Bonjour, monde! Je suis prêt pour toi!' }
 ```
 
+Advanced:
+```ts
+getChatCompletionAdvanced(
+  openai,
+  [{
+    role: 'user',
+    name: 'System',
+    content: `Please translate this phrase to French.
+
+Phrase: Hello, world! I'm ready for you!
+`,
+  }], {
+  temperature: 0.9,
+  top_p: 0.9,
+  frequency_penalty: 0,
+  presence_penalty: 0,
+  user: 'test',
+},
+  result => console.log(JSON.stringify(result), null, '    '),
+  console.error,
+);
+```
+
+Will print:
+```ts
+{
+    "created": 1677938435,
+    "model": "gpt-3.5-turbo-0301",
+    "object": "chat.completion",
+    "id": "chatcmpl-XXXXXXXX",
+    "choices": [{
+        "delta": {"role": "assistant", "content": "Bonjour le monde ! Je suis prêt pour toi !"},
+        "index": 0,
+        "finish_reason": "stop"
+    }],
+    "usage": {"prompt_tokens": 26, "completion_tokens": 13, "total_tokens": 39}
+}
+```
+
 ## OpenAI Completion Functions
 
 ### `getCompletionAdvanced`
