@@ -17,5 +17,5 @@ export {
 
 export {
     getChatCompletionSimple,
-    getChatCompletion,
+    getChatCompletionAdvanced,
 } from './chatCompletion';

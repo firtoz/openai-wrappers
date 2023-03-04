@@ -23,31 +23,7 @@ const defaultChatCompletionOptions: ChatCompletionOptions = {
     stream: false,
 };
 
-export async function getChatCompletionSimple(
-    openai: OpenAIApi,
-    messages: ChatCompletionRequestMessage[],
-    options: Exclude<Partial<ChatCompletionOptions>, 'stream'> = {},
-): Promise<string> {
-    return await new Promise<string>(async (resolve, reject) => {
-        await getChatCompletion(openai, messages, options, result => {
-            const content = result.choices[0].delta.content;
-            if (content) {
-                resolve(content);
-            } else {
-                const error: CustomCompletionError = {
-                    type: CompletionErrorType.NoResponse,
-                    message: 'No response.',
-                };
-
-                reject(error);
-            }
-        }, error => {
-            reject(error);
-        });
-    })
-}
-
-export async function getChatCompletion(
+export async function getChatCompletionAdvanced(
     openai: OpenAIApi,
     messages: ChatCompletionRequestMessage[],
     options: Partial<ChatCompletionOptions> = {},
@@ -206,4 +182,28 @@ export async function getChatCompletion(
 
         return;
     }
+}
+
+export async function getChatCompletionSimple(
+    openai: OpenAIApi,
+    messages: ChatCompletionRequestMessage[],
+    options: Exclude<Partial<ChatCompletionOptions>, 'stream'> = {},
+): Promise<string> {
+    return await new Promise<string>(async (resolve, reject) => {
+        await getChatCompletionAdvanced(openai, messages, options, result => {
+            const content = result.choices[0].delta.content;
+            if (content) {
+                resolve(content);
+            } else {
+                const error: CustomCompletionError = {
+                    type: CompletionErrorType.NoResponse,
+                    message: 'No response.',
+                };
+
+                reject(error);
+            }
+        }, error => {
+            reject(error);
+        });
+    })
 }

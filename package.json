@@ -7,7 +7,12 @@
     "test": "echo no tests && exit 0"
   },
   "keywords": [
-    "typescript"
+    "typescript",
+    "openai",
+    "text completion",
+    "text-davinci-003",
+    "chatgpt-api",
+    "gpt-3.5-turbo"
   ],
   "files": [
     "lib/*",
