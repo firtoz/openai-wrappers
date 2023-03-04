@@ -1,5 +1,5 @@
 {
-  "name": "@kroxilon/openai-wrappers",
+  "name": "@firtoz/openai-wrappers",
   "version": "0.0.1",
   "description": "Wrappers for completion and chatCompletion. Supports streaming and basic error handling.",
   "scripts": {
