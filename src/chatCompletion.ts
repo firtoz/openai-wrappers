@@ -190,20 +190,29 @@ export async function getChatCompletionSimple(
     options: Exclude<Partial<ChatCompletionOptions>, 'stream'> = {},
 ): Promise<string> {
     return await new Promise<string>(async (resolve, reject) => {
-        await getChatCompletionAdvanced(openai, messages, options, result => {
-            const content = result.choices[0].delta.content;
-            if (content) {
-                resolve(content);
-            } else {
-                const error: CustomCompletionError = {
-                    type: CompletionErrorType.NoResponse,
-                    message: 'No response.',
-                };
+        try {
+            await getChatCompletionAdvanced(openai, messages, options, result => {
+                const content = result.choices[0].delta.content;
+                if (content) {
+                    resolve(content);
+                } else {
+                    const error: CustomCompletionError = {
+                        type: CompletionErrorType.NoResponse,
+                        message: 'No response.',
+                    };
 
+                    reject(error);
+                }
+            }, error => {
                 reject(error);
-            }
-        }, error => {
+            });
+        } catch (e) {
+            console.error(e);
+            const error: CustomCompletionError = {
+                message: "Unhandled error",
+                type: CompletionErrorType.Unknown,
+            };
             reject(error);
-        });
+        }
     })
 }
