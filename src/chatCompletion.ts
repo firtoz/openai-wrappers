@@ -168,11 +168,18 @@ export async function getChatCompletionAdvanced(
             }
         });
 
-        streamResponse.on('error', async () => {
-            console.log('STREAM error');
-        });
-
         await new Promise<void>((resolve) => {
+            streamResponse.on('error', async () => {
+                console.log('STREAM error');
+
+                onError({
+                    type: CompletionErrorType.Unknown,
+                    message: 'Stream just had an error.',
+                });
+
+                resolve();
+            });
+
             streamResponse.on('end', async () => {
                 resolve();
             });
