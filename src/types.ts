@@ -11,7 +11,8 @@ export type CompletionError = {
 };
 
 export type ModelName = 'text-davinci-003'
-export type ChatModelName = 'gpt-3.5-turbo'
+export type ChatModelName = 'gpt-3.5-turbo-0301' | 'gpt-3.5-turbo'
+    | 'gpt-4' | 'gpt-4-32k'
 
 export type CompletionParams = Omit<CreateCompletionRequest, 'prompt' | 'model'> & {
     model: ModelName,
@@ -19,7 +20,6 @@ export type CompletionParams = Omit<CreateCompletionRequest, 'prompt' | 'model'>
 
 export enum CompletionErrorType {
     Unknown,
-    NoOpenai,
     NoResponse,
     OutOfTokens,
 }
