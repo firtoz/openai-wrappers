@@ -11,7 +11,7 @@ import {
     CompletionErrorType,
     CustomCompletionError
 } from "./types";
-import {AxiosResponse} from "axios";
+import {AxiosResponse, CancelToken} from "axios";
 import {Stream} from "stream";
 
 const defaultChatCompletionOptions: ChatCompletionOptions = {
@@ -29,6 +29,7 @@ export async function getChatCompletionAdvanced(
     options: Partial<ChatCompletionOptions> = {},
     onProgress: (result: ChatStreamDelta) => void,
     onError: (error: CustomCompletionError) => void,
+    cancelToken?: CancelToken,
 ): Promise<void> {
     const actualOptions: CreateChatCompletionRequest = {
         ...defaultChatCompletionOptions,
@@ -45,6 +46,7 @@ export async function getChatCompletionAdvanced(
         try {
             response = await openai.createChatCompletion(actualOptions, {
                 responseType: actualOptions.stream ? 'stream' : 'json',
+                cancelToken,
             }) as any;
         } catch (e: any) {
             if (e.isAxiosError) {
@@ -195,24 +197,32 @@ export async function getChatCompletionSimple(
     openai: OpenAIApi,
     messages: ChatCompletionRequestMessage[],
     options: Exclude<Partial<ChatCompletionOptions>, 'stream'> = {},
+    cancelToken?: CancelToken,
 ): Promise<string> {
     return await new Promise<string>(async (resolve, reject) => {
         try {
-            await getChatCompletionAdvanced(openai, messages, options, result => {
-                const content = result.choices[0].delta.content;
-                if (content) {
-                    resolve(content);
-                } else {
-                    const error: CustomCompletionError = {
-                        type: CompletionErrorType.NoResponse,
-                        message: 'No response.',
-                    };
+            await getChatCompletionAdvanced(
+                openai,
+                messages,
+                options,
+                result => {
+                    const content = result.choices[0].delta.content;
+                    if (content) {
+                        resolve(content);
+                    } else {
+                        const error: CustomCompletionError = {
+                            type: CompletionErrorType.NoResponse,
+                            message: 'No response.',
+                        };
 
+                        reject(error);
+                    }
+                },
+                error => {
                     reject(error);
-                }
-            }, error => {
-                reject(error);
-            });
+                },
+                cancelToken
+            );
         } catch (e) {
             console.error(e);
             const error: CustomCompletionError = {

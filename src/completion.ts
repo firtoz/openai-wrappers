@@ -1,6 +1,7 @@
 import {CompletionError, CompletionErrorType, CompletionParams, CustomCompletionError} from "./types";
 import {CreateCompletionResponse, OpenAIApi} from "openai";
-import {AxiosResponse} from "axios/index";
+import {AxiosResponse, CancelToken} from "axios";
+
 import {Stream} from "stream";
 
 const defaultOptions: CompletionParams = {
@@ -19,6 +20,7 @@ export async function getCompletionAdvanced(
     options: Partial<CompletionParams> = {},
     onProgress: (result: CreateCompletionResponse) => void,
     onError: (error: CustomCompletionError) => void,
+    cancelToken?: CancelToken,
 ): Promise<void> {
     const actualOptions: CompletionParams = {
         ...defaultOptions,
@@ -37,6 +39,7 @@ export async function getCompletionAdvanced(
                 prompt,
             }, {
                 responseType: actualOptions.stream ? 'stream' : 'json',
+                cancelToken,
             }) as any;
         } catch (e: any) {
             if (e.isAxiosError) {
@@ -135,7 +138,9 @@ export async function getCompletionAdvanced(
 export async function getCompletionSimple(
     openai: OpenAIApi,
     prompt: string,
-    options: Partial<CompletionParams> = {}, onProgress?: (result: string, finished: boolean) => void
+    options: Partial<CompletionParams> = {},
+    onProgress?: (result: string, finished: boolean) => void,
+    cancelToken?: CancelToken,
 ): Promise<string> {
     const actualOptions: CompletionParams = {
         ...defaultOptions,
@@ -158,6 +163,7 @@ export async function getCompletionSimple(
                 prompt: fullPrompt,
             }, {
                 responseType: actualOptions.stream ? 'stream' : 'json',
+                cancelToken,
             }) as any;
         } catch (e: any) {
             if (e.isAxiosError) {
