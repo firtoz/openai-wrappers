@@ -23,13 +23,24 @@ const defaultChatCompletionOptions: ChatCompletionOptions = {
     stream: false,
 };
 
+export interface ChatCompletionAdvancedParams {
+    openai: OpenAIApi;
+    messages: ChatCompletionRequestMessage[];
+    options: Partial<ChatCompletionOptions>;
+    onProgress: (result: ChatStreamDelta) => void;
+    onError: (error: CustomCompletionError) => void;
+    cancelToken?: CancelToken;
+}
+
 export async function getChatCompletionAdvanced(
-    openai: OpenAIApi,
-    messages: ChatCompletionRequestMessage[],
-    options: Partial<ChatCompletionOptions> = {},
-    onProgress: (result: ChatStreamDelta) => void,
-    onError: (error: CustomCompletionError) => void,
-    cancelToken?: CancelToken,
+    {
+        openai,
+        messages,
+        options = {},
+        onProgress,
+        onError,
+        cancelToken,
+    }: ChatCompletionAdvancedParams,
 ): Promise<void> {
     const actualOptions: CreateChatCompletionRequest = {
         ...defaultChatCompletionOptions,
@@ -193,35 +204,41 @@ export async function getChatCompletionAdvanced(
     }
 }
 
+export interface ChatCompletionSimpleParams {
+    openai: OpenAIApi;
+    messages: ChatCompletionRequestMessage[];
+    options?: Exclude<Partial<ChatCompletionOptions>, "stream">;
+    cancelToken?: CancelToken;
+}
+
 export async function getChatCompletionSimple(
-    openai: OpenAIApi,
-    messages: ChatCompletionRequestMessage[],
-    options: Exclude<Partial<ChatCompletionOptions>, 'stream'> = {},
-    cancelToken?: CancelToken,
+    {
+        openai,
+        messages,
+        options = {},
+        cancelToken,
+    }: ChatCompletionSimpleParams,
 ): Promise<string> {
     return await new Promise<string>(async (resolve, reject) => {
         try {
             await getChatCompletionAdvanced(
-                openai,
-                messages,
-                options,
-                result => {
-                    const content = result.choices[0].delta.content;
-                    if (content) {
-                        resolve(content);
-                    } else {
-                        const error: CustomCompletionError = {
-                            type: CompletionErrorType.NoResponse,
-                            message: 'No response.',
-                        };
+                {
+                    openai: openai, messages: messages, options: options, onProgress: result => {
+                        const content = result.choices[0].delta.content;
+                        if (content) {
+                            resolve(content);
+                        } else {
+                            const error: CustomCompletionError = {
+                                type: CompletionErrorType.NoResponse,
+                                message: 'No response.',
+                            };
 
+                            reject(error);
+                        }
+                    }, onError: error => {
                         reject(error);
-                    }
-                },
-                error => {
-                    reject(error);
-                },
-                cancelToken
+                    }, cancelToken: cancelToken
+                }
             );
         } catch (e) {
             console.error(e);

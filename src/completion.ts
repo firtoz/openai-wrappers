@@ -14,13 +14,17 @@ const defaultOptions: CompletionParams = {
     stream: false,
 };
 
+export interface CompletionAdvancedParams {
+    openai: OpenAIApi;
+    prompt: string;
+    options: Partial<CompletionParams>;
+    onProgress: (result: CreateCompletionResponse) => void;
+    onError: (error: CustomCompletionError) => void;
+    cancelToken?: CancelToken;
+}
+
 export async function getCompletionAdvanced(
-    openai: OpenAIApi,
-    prompt: string,
-    options: Partial<CompletionParams> = {},
-    onProgress: (result: CreateCompletionResponse) => void,
-    onError: (error: CustomCompletionError) => void,
-    cancelToken?: CancelToken,
+    {openai, prompt, options={}, onProgress, onError, cancelToken}: CompletionAdvancedParams,
 ): Promise<void> {
     const actualOptions: CompletionParams = {
         ...defaultOptions,
@@ -135,12 +139,16 @@ export async function getCompletionAdvanced(
     }
 }
 
+export interface CompletionSimpleParams {
+    openai: OpenAIApi;
+    prompt: string;
+    options?: Partial<CompletionParams>;
+    onProgress?: (result: string, finished: boolean) => void;
+    cancelToken?: CancelToken;
+}
+
 export async function getCompletionSimple(
-    openai: OpenAIApi,
-    prompt: string,
-    options: Partial<CompletionParams> = {},
-    onProgress?: (result: string, finished: boolean) => void,
-    cancelToken?: CancelToken,
+    {openai, prompt, options={}, onProgress, cancelToken}: CompletionSimpleParams,
 ): Promise<string> {
     const actualOptions: CompletionParams = {
         ...defaultOptions,
