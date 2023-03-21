@@ -24,22 +24,26 @@ const openai = new OpenAIApi(new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 }));
 
-getChatCompletionSimple(
-    openai,
-    [{
-        role: 'user',
-        name: 'System',
-        content: `Please translate this phrase to French.
+getChatCompletionSimple({
+    openai: openai,
+    messages: [
+        {
+            role: 'user',
+            name: 'System',
+            content: `Please translate this phrase to French.
 
 Phrase: Hello, world! I'm ready for you!
 `,
-    }], {
+        }
+    ],
+    options: {
         temperature: 0.9,
         top_p: 0.9,
         frequency_penalty: 0,
         presence_penalty: 0,
         user: 'test',
-    }).then(result => console.log({result}));
+    },
+}).then(result => console.log({result}));
 ```
 
 Should print:
@@ -53,25 +57,35 @@ Should print:
 Advanced:
 
 ```ts
-getChatCompletionAdvanced(
-    openai,
-    [{
-        role: 'user',
-        name: 'System',
-        content: `Please translate this phrase to French.
+import {getChatCompletionAdvanced} from '@firtoz/openai-wrappers';
+import {Configuration, OpenAIApi} from 'openai';
+
+const openai = new OpenAIApi(new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+}));
+
+getChatCompletionAdvanced({
+    openai: openai,
+    messages: [
+        {
+            role: 'user',
+            name: 'System',
+            content: `Please translate this phrase to French.
 
 Phrase: Hello, world! I'm ready for you!
 `,
-    }], {
+        }
+    ],
+    options: {
         temperature: 0.9,
         top_p: 0.9,
         frequency_penalty: 0,
         presence_penalty: 0,
         user: 'test',
     },
-    result => console.log(JSON.stringify(result, null, '    ')),
-    console.error,
-);
+    onProgress: result => console.log(JSON.stringify(result, null, '    ')),
+    onError: console.error,
+});
 ```
 
 Will print:
@@ -105,16 +119,19 @@ Streaming:
 Code:
 
 ```ts
-getChatCompletionAdvanced(
-    openai,
-    [{
-        role: 'user',
-        name: 'System',
-        content: `Please translate this phrase to French.
+getChatCompletionAdvanced({
+    openai: openai,
+    messages: [
+        {
+            role: 'user',
+            name: 'System',
+            content: `Please translate this phrase to French.
 
 Phrase: Hello, world! I'm ready for you!
 `,
-    }], {
+        }
+    ],
+    options: {
         temperature: 0.9,
         top_p: 0.9,
         frequency_penalty: 0,
@@ -122,9 +139,9 @@ Phrase: Hello, world! I'm ready for you!
         user: 'test',
         stream: true,
     },
-    result => console.log(JSON.stringify(result, null, '  ')),
-    console.error,
-);
+    onProgress: result => console.log(JSON.stringify(result, null, '  ')),
+    onError: console.error,
+});
 ```
 
 <details>
@@ -332,20 +349,26 @@ Will print (click the arrow on the left to expand):
 
 ## OpenAI Completion Functions
 
-### `getCompletionAdvanced`
+### getCompletionAdvanced
 
 ```ts
+export interface CompletionAdvancedParams {
+    openai: OpenAIApi;
+    prompt: string;
+    options: Partial<CompletionParams>;
+    onProgress: (result: CreateCompletionResponse) => void;
+    onError: (error: CustomCompletionError) => void;
+    cancelToken?: CancelToken;
+}
+
 declare async function getCompletionAdvanced(
-    openai: OpenAIApi,
-    prompt: string,
-    options: Partial<CompletionParams> = {},
-    onProgress: (result: CreateCompletionResponse) => void,
-    onError: (error: CustomCompletionError) => void,
-    cancelToken?: CancelToken,
+    {openai, prompt, options = {}, onProgress, onError, cancelToken}: CompletionAdvancedParams,
 ): Promise<void>;
+
 ```
 
-This function generates text completions using the OpenAI API with advanced options. It takes the following parameters:
+This function generates text completions using the OpenAI API with advanced options.
+It takes the following parameters as a param object:
 
 - `openai`: An instance of the `OpenAIApi` class from the `openai` package.
 - `prompt`: The text prompt to generate completions for.
@@ -370,16 +393,21 @@ This function generates text completions using the OpenAI API with advanced opti
 ### `getCompletionSimple`
 
 ```ts
+declare interface CompletionSimpleParams {
+    openai: OpenAIApi;
+    prompt: string;
+    options?: Partial<CompletionParams>;
+    onProgress?: (result: string, finished: boolean) => void;
+    cancelToken?: CancelToken;
+}
+
 declare async function getCompletionSimple(
-    openai: OpenAIApi,
-    prompt: string,
-    options: Partial<CompletionParams> = {},
-    onProgress?: (result: string, finished: boolean) => void,
-    cancelToken?: CancelToken,
+    {openai, prompt, options = {}, onProgress, cancelToken}: CompletionSimpleParams,
 ): Promise<string>;
 ```
 
-This function generates text completions using the OpenAI API with simple options. It takes the following parameters:
+This function generates text completions using the OpenAI API with simple options.
+It takes the following parameters as a param object:
 
 - `openai`: An instance of the `OpenAIApi` class from the `openai` package.
 - `prompt`: The text prompt to generate completions for.
@@ -397,17 +425,29 @@ during the completion, the Promise will be rejected with an error object.
 ### `getChatCompletionAdvanced`
 
 ```ts
+
+declare interface ChatCompletionAdvancedParams {
+    openai: OpenAIApi;
+    messages: ChatCompletionRequestMessage[];
+    options: Partial<ChatCompletionOptions>;
+    onProgress: (result: ChatStreamDelta) => void;
+    onError: (error: CustomCompletionError) => void;
+    cancelToken?: CancelToken;
+}
+
 declare async function getChatCompletionAdvanced(
-    openai: OpenAIApi,
-    messages: ChatCompletionRequestMessage[],
-    options: Partial<ChatCompletionOptions> = {},
-    onProgress: (result: ChatStreamDelta) => void,
-    onError: (error: CustomCompletionError) => void,
-    cancelToken?: CancelToken,
+    {
+        openai,
+        messages,
+        options = {},
+        onProgress,
+        onError,
+        cancelToken,
+    }: ChatCompletionAdvancedParams,
 ): Promise<void>;
 ```
 
-This function takes in the following parameters:
+This function takes in the following parameters in a param object:
 
 - `openai`: An instance of the `OpenAIApi` class from the `openai` package.
 - `messages`: An array of `ChatCompletionRequestMessage` objects that represent the conversation history.
@@ -433,15 +473,24 @@ This function returns a Promise that resolves when the conversation is complete.
 ### `getChatCompletionSimple`
 
 ```ts
+declare interface ChatCompletionSimpleParams {
+    openai: OpenAIApi;
+    messages: ChatCompletionRequestMessage[];
+    options?: Exclude<Partial<ChatCompletionOptions>, "stream">;
+    cancelToken?: CancelToken;
+}
+
 declare async function getChatCompletionSimple(
-    openai: OpenAIApi,
-    messages: ChatCompletionRequestMessage[],
-    options: Exclude<Partial<ChatCompletionOptions>, 'stream'> = {},
-    cancelToken?: CancelToken,
+    {
+        openai,
+        messages,
+        options = {},
+        cancelToken,
+    }: ChatCompletionSimpleParams,
 ): Promise<string>;
 ```
 
-This function takes in the following parameters:
+This function takes in the following parameters in a param object:
 
 - `openai`: An instance of the `OpenAIApi` class from the `openai` package.
 - `messages`: An array of `ChatCompletionRequestMessage` objects that represent the conversation history.
