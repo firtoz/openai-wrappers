@@ -1,6 +1,6 @@
 import {CompletionError, CompletionErrorType, CompletionParams, CustomCompletionError} from "./types";
 import {CreateCompletionResponse, OpenAIApi} from "openai";
-import {AxiosResponse, CancelToken} from "axios";
+import {AxiosResponse} from "axios";
 
 import {Stream} from "stream";
 
@@ -20,11 +20,11 @@ export interface CompletionAdvancedParams {
     options: Partial<CompletionParams>;
     onProgress: (result: CreateCompletionResponse) => void;
     onError: (error: CustomCompletionError) => void;
-    cancelToken?: CancelToken;
+    signal?: AbortSignal;
 }
 
 export async function getCompletionAdvanced(
-    {openai, prompt, options={}, onProgress, onError, cancelToken}: CompletionAdvancedParams,
+    {openai, prompt, options={}, onProgress, onError, signal}: CompletionAdvancedParams,
 ): Promise<void> {
     const actualOptions: CompletionParams = {
         ...defaultOptions,
@@ -43,7 +43,7 @@ export async function getCompletionAdvanced(
                 prompt,
             }, {
                 responseType: actualOptions.stream ? 'stream' : 'json',
-                cancelToken,
+                signal,
             }) as any;
         } catch (e: any) {
             if (e.isAxiosError) {
@@ -144,11 +144,11 @@ export interface CompletionSimpleParams {
     prompt: string;
     options?: Partial<CompletionParams>;
     onProgress?: (result: string, finished: boolean) => void;
-    cancelToken?: CancelToken;
+    signal?: AbortSignal;
 }
 
 export async function getCompletionSimple(
-    {openai, prompt, options={}, onProgress, cancelToken}: CompletionSimpleParams,
+    {openai, prompt, options={}, onProgress, signal}: CompletionSimpleParams,
 ): Promise<string> {
     const actualOptions: CompletionParams = {
         ...defaultOptions,
@@ -171,7 +171,7 @@ export async function getCompletionSimple(
                 prompt: fullPrompt,
             }, {
                 responseType: actualOptions.stream ? 'stream' : 'json',
-                cancelToken,
+                signal,
             }) as any;
         } catch (e: any) {
             if (e.isAxiosError) {

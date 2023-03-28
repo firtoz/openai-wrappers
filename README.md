@@ -358,11 +358,11 @@ export interface CompletionAdvancedParams {
     options: Partial<CompletionParams>;
     onProgress: (result: CreateCompletionResponse) => void;
     onError: (error: CustomCompletionError) => void;
-    cancelToken?: CancelToken;
+    signal?: AbortSignal;
 }
 
 declare async function getCompletionAdvanced(
-    {openai, prompt, options = {}, onProgress, onError, cancelToken}: CompletionAdvancedParams,
+    {openai, prompt, options = {}, onProgress, onError, signal}: CompletionAdvancedParams,
 ): Promise<void>;
 
 ```
@@ -388,7 +388,7 @@ It takes the following parameters as a param object:
   a `CreateCompletionResponse` object.
 - `onError`: A callback function that is called if an error occurs during the completion. The function is passed
   a `CustomCompletionError` object.
-- `cancelToken`: An optional `CancelToken` instance to cancel the request if needed.
+- `signal`: An optional `AbortSignal` instance to cancel the request if needed.
 
 ### `getCompletionSimple`
 
@@ -398,11 +398,11 @@ declare interface CompletionSimpleParams {
     prompt: string;
     options?: Partial<CompletionParams>;
     onProgress?: (result: string, finished: boolean) => void;
-    cancelToken?: CancelToken;
+    signal?: AbortSignal;
 }
 
 declare async function getCompletionSimple(
-    {openai, prompt, options = {}, onProgress, cancelToken}: CompletionSimpleParams,
+    {openai, prompt, options = {}, onProgress, signal}: CompletionSimpleParams,
 ): Promise<string>;
 ```
 
@@ -415,7 +415,7 @@ It takes the following parameters as a param object:
   for `getCompletionAdvanced`.
 - `onProgress`: An optional callback function that is called with each progress update from the API. The function is
   passed a string containing the latest generated text and a boolean indicating whether the completion is finished.
-- `cancelToken`: An optional `CancelToken` instance to cancel the request if needed.
+- `signal`: An optional `AbortSignal` instance to cancel the request if needed.
 
 Both functions return a Promise that resolves to a string containing the generated text completion. If an error occurs
 during the completion, the Promise will be rejected with an error object.
@@ -432,7 +432,7 @@ declare interface ChatCompletionAdvancedParams {
     options: Partial<ChatCompletionOptions>;
     onProgress: (result: ChatStreamDelta) => void;
     onError: (error: CustomCompletionError) => void;
-    cancelToken?: CancelToken;
+    signal?: AbortSignal;
 }
 
 declare async function getChatCompletionAdvanced(
@@ -442,7 +442,7 @@ declare async function getChatCompletionAdvanced(
         options = {},
         onProgress,
         onError,
-        cancelToken,
+        signal,
     }: ChatCompletionAdvancedParams,
 ): Promise<void>;
 ```
@@ -466,7 +466,7 @@ This function takes in the following parameters in a param object:
   a `ChatStreamDelta` object that represents the new response.
 - `onError`: A callback function that is called if an error occurs. The function takes in a `CustomCompletionError`
   object that represents the error.
-- `cancelToken`: An optional `CancelToken` instance to cancel the request if needed.
+- `signal`: An optional `AbortSignal` instance to cancel the request if needed.
 
 This function returns a Promise that resolves when the conversation is complete.
 
@@ -477,7 +477,7 @@ declare interface ChatCompletionSimpleParams {
     openai: OpenAIApi;
     messages: ChatCompletionRequestMessage[];
     options?: Exclude<Partial<ChatCompletionOptions>, "stream">;
-    cancelToken?: CancelToken;
+    signal?: AbortSignal;
 }
 
 declare async function getChatCompletionSimple(
@@ -485,7 +485,7 @@ declare async function getChatCompletionSimple(
         openai,
         messages,
         options = {},
-        cancelToken,
+        signal,
     }: ChatCompletionSimpleParams,
 ): Promise<string>;
 ```
@@ -496,6 +496,6 @@ This function takes in the following parameters in a param object:
 - `messages`: An array of `ChatCompletionRequestMessage` objects that represent the conversation history.
 - `options`: An optional object that contains the same properties as the `options` parameter of the `getChatCompletion`
   function, except for the `stream` property.
-- `cancelToken`: An optional `CancelToken` instance to cancel the request if needed.
+- `signal`: An optional `AbortSignal` instance to cancel the request if needed.
 
 This function returns a Promise that resolves with the final response from the conversation.

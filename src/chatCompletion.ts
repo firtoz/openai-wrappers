@@ -11,7 +11,7 @@ import {
     CompletionErrorType,
     CustomCompletionError
 } from "./types";
-import {AxiosResponse, CancelToken} from "axios";
+import {AxiosResponse} from "axios";
 import {Stream} from "stream";
 
 const defaultChatCompletionOptions: ChatCompletionOptions = {
@@ -29,7 +29,7 @@ export interface ChatCompletionAdvancedParams {
     options: Partial<ChatCompletionOptions>;
     onProgress: (result: ChatStreamDelta) => void;
     onError: (error: CustomCompletionError) => void;
-    cancelToken?: CancelToken;
+    signal?: AbortSignal;
 }
 
 export async function getChatCompletionAdvanced(
@@ -39,7 +39,7 @@ export async function getChatCompletionAdvanced(
         options = {},
         onProgress,
         onError,
-        cancelToken,
+        signal,
     }: ChatCompletionAdvancedParams,
 ): Promise<void> {
     const actualOptions: CreateChatCompletionRequest = {
@@ -57,7 +57,7 @@ export async function getChatCompletionAdvanced(
         try {
             response = await openai.createChatCompletion(actualOptions, {
                 responseType: actualOptions.stream ? 'stream' : 'json',
-                cancelToken,
+                signal,
             }) as any;
         } catch (e: any) {
             if (e.isAxiosError) {
@@ -208,7 +208,7 @@ export interface ChatCompletionSimpleParams {
     openai: OpenAIApi;
     messages: ChatCompletionRequestMessage[];
     options?: Exclude<Partial<ChatCompletionOptions>, "stream">;
-    cancelToken?: CancelToken;
+    signal?: AbortSignal;
 }
 
 export async function getChatCompletionSimple(
@@ -216,7 +216,7 @@ export async function getChatCompletionSimple(
         openai,
         messages,
         options = {},
-        cancelToken,
+        signal,
     }: ChatCompletionSimpleParams,
 ): Promise<string> {
     return await new Promise<string>(async (resolve, reject) => {
@@ -237,7 +237,8 @@ export async function getChatCompletionSimple(
                         }
                     }, onError: error => {
                         reject(error);
-                    }, cancelToken: cancelToken
+                    },
+                    signal
                 }
             );
         } catch (e) {
