@@ -14,10 +14,14 @@ jobs:
     steps:
       - name: Check if actor is a maintainer
         id: check-maintainer
-        uses: ./.github/actions/is-maintainer-action
+        uses: actions/github-script@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          actor: ${{ github.actor }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const repo = await github.rest.repos.get(context.repo);
+            const maintainers = repo.data.permissions.admins;
+            const isMaintainer = maintainers.includes(github.actor);
+            return { isMaintainer: isMaintainer };
 
   request-approval:
     if: needs.check-maintainer.outputs.isMaintainer == 'false'
