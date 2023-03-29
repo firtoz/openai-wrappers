@@ -18,10 +18,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const repo = await github.rest.repos.get(context.repo);
-            const maintainers = repo.data.permissions.admins;
-            const isMaintainer = maintainers.includes(github.actor);
-            return { isMaintainer: isMaintainer };
+            const collaborators = await github.rest.repos.listCollaborators(context.repo);
+            const maintainer = collaborators.data.find(
+              (collaborator) => collaborator.login === github.actor && collaborator.permissions.admin
+            );
+            return { isMaintainer: !!maintainer };
 
   request-approval:
     if: needs.check-maintainer.outputs.isMaintainer == 'false'
