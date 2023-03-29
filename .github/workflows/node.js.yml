@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Check if actor is a maintainer
         id: check-maintainer
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add PR comment for manual approval
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -43,7 +43,7 @@ jobs:
 
   build:
     needs: check-maintainer
-    if: needs.check-maintainer.outputs.isMaintainer == 'true'
+    if: needs.check-maintainer.outputs.isMaintainer == 'true' || github.event_name == 'push'
     runs-on: ubuntu-latest
 
     strategy:
