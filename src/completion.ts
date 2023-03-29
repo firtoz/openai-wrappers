@@ -3,6 +3,7 @@ import {CreateCompletionResponse, OpenAIApi} from "openai";
 import {AxiosResponse} from "axios";
 
 import {Stream} from "stream";
+import {IncomingMessage} from "http";
 
 const defaultOptions: CompletionParams = {
     model: "text-davinci-003",
@@ -24,7 +25,14 @@ export interface CompletionAdvancedParams {
 }
 
 export async function getCompletionAdvanced(
-    {openai, prompt, options={}, onProgress, onError, signal}: CompletionAdvancedParams,
+    {
+        openai,
+        prompt,
+        options = {},
+        onProgress,
+        onError: handleOnError,
+        signal,
+    }: CompletionAdvancedParams,
 ): Promise<void> {
     const actualOptions: CompletionParams = {
         ...defaultOptions,
@@ -34,7 +42,27 @@ export async function getCompletionAdvanced(
     let numRetries = 0;
     const maxRetries = 3;
 
+    let errorHandled = false;
+    const onError = (error: CustomCompletionError): void => {
+        if (errorHandled) {
+            return;
+        }
+
+        errorHandled = true;
+
+        handleOnError(error);
+    }
+
     while (true) {
+        if (signal?.aborted) {
+            onError({
+                type: CompletionErrorType.Aborted,
+                message: 'Aborted',
+            });
+
+            return;
+        }
+
         let response: AxiosResponse<CreateCompletionResponse | Stream> | undefined;
 
         try {
@@ -53,8 +81,18 @@ export async function getCompletionAdvanced(
                     type: CompletionErrorType.Unknown,
                     message: e.message,
                 });
+
                 return;
             }
+        }
+
+        if (signal?.aborted) {
+            onError({
+                type: CompletionErrorType.Aborted,
+                message: 'Aborted',
+            });
+
+            return;
         }
 
         if (!response) {
@@ -77,6 +115,7 @@ export async function getCompletionAdvanced(
                 });
                 return;
             } else if (data.error?.message) {
+                // ignore
             }
 
             if (numRetries < maxRetries) {
@@ -98,10 +137,36 @@ export async function getCompletionAdvanced(
             return;
         }
 
-        const streamResponse = responseData as Stream;
+        const streamResponse = responseData as IncomingMessage;
+        if (signal) {
+            if (signal.aborted) {
+                streamResponse.socket.end();
+            } else {
+                signal.addEventListener('abort', () => {
+                    streamResponse.socket.end();
+                });
+            }
+        }
 
         await new Promise<void>((resolve) => {
-            streamResponse.on('data', async (data) => {
+            const handleOnData = async (data: any) => {
+                if (signal?.aborted) {
+                    streamResponse.off('data', handleOnData);
+
+                    onError({
+                        type: CompletionErrorType.Aborted,
+                        message: 'Stream aborted',
+                    });
+
+                    return;
+                }
+
+                if (errorHandled) {
+                    streamResponse.off('data', handleOnData);
+
+                    return;
+                }
+
                 const lines = data
                     .toString()
                     .split('\n')
@@ -109,7 +174,6 @@ export async function getCompletionAdvanced(
                 for (const line of lines) {
                     const message = line.replace(/^data: /, '');
                     if (message === '[DONE]') {
-                        resolve();
                         return;
                     }
 
@@ -127,12 +191,46 @@ export async function getCompletionAdvanced(
                             message: 'Cannot parse response.',
                         });
 
+                        streamResponse.off('data', handleOnData);
+
                         resolve();
                     }
                 }
-            });
+            };
 
-            return;
+            streamResponse.on('data', handleOnData);
+
+            const handleOnError = async (err: Error) => {
+                streamResponse.off('data', handleOnData);
+
+                if (signal?.aborted) {
+                    onError({
+                        type: CompletionErrorType.Aborted,
+                        message: 'Stream aborted',
+                    });
+
+                    resolve();
+
+                    return;
+                }
+
+                console.log('STREAM error', err);
+
+                onError({
+                    type: CompletionErrorType.Unknown,
+                    message: 'Stream just had an error.',
+                });
+
+                resolve();
+            };
+
+            streamResponse.once('error', handleOnError);
+
+            const handleOnEnd = async () => {
+                resolve();
+            };
+
+            streamResponse.once('end', handleOnEnd);
         });
 
         return;
@@ -148,7 +246,7 @@ export interface CompletionSimpleParams {
 }
 
 export async function getCompletionSimple(
-    {openai, prompt, options={}, onProgress, signal}: CompletionSimpleParams,
+    {openai, prompt, options = {}, onProgress, signal}: CompletionSimpleParams,
 ): Promise<string> {
     const actualOptions: CompletionParams = {
         ...defaultOptions,

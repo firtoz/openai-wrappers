@@ -13,6 +13,8 @@ import {
 } from "./types";
 import {AxiosResponse} from "axios";
 import {Stream} from "stream";
+import {IncomingMessage} from "http";
+import {sign} from "crypto";
 
 const defaultChatCompletionOptions: ChatCompletionOptions = {
     model: "gpt-3.5-turbo",
@@ -38,7 +40,7 @@ export async function getChatCompletionAdvanced(
         messages,
         options = {},
         onProgress,
-        onError,
+        onError: handleOnError,
         signal,
     }: ChatCompletionAdvancedParams,
 ): Promise<void> {
@@ -51,7 +53,27 @@ export async function getChatCompletionAdvanced(
     let numRetries = 0;
     const maxRetries = 3;
 
+    let errorHandled = false;
+    const onError = (error: CustomCompletionError): void => {
+        if (errorHandled) {
+            return;
+        }
+
+        errorHandled = true;
+
+        handleOnError(error);
+    }
+
     while (true) {
+        if (signal?.aborted) {
+            onError({
+                type: CompletionErrorType.Aborted,
+                message: 'Aborted',
+            });
+
+            return;
+        }
+
         let response: AxiosResponse<CreateChatCompletionResponse | Stream> | undefined;
 
         try {
@@ -67,8 +89,18 @@ export async function getChatCompletionAdvanced(
                     type: CompletionErrorType.Unknown,
                     message: e.message,
                 });
+
                 return;
             }
+        }
+
+        if (signal?.aborted) {
+            onError({
+                type: CompletionErrorType.Aborted,
+                message: 'Aborted',
+            });
+
+            return;
         }
 
         if (!response) {
@@ -91,6 +123,7 @@ export async function getChatCompletionAdvanced(
                 });
                 return;
             } else if (data.error?.message) {
+                // ignore
             }
 
             if (numRetries < maxRetries) {
@@ -135,18 +168,45 @@ export async function getChatCompletionAdvanced(
                 }),
                 usage: completionResponse.usage,
             });
+
             return;
         }
 
-        const streamResponse = responseData as Stream;
+        const streamResponse = responseData as IncomingMessage;
+        if (signal) {
+            if (signal.aborted) {
+                streamResponse.socket.end();
+            } else {
+                signal.addEventListener('abort', () => {
+                    streamResponse.socket.end();
+                });
+            }
+        }
 
         let buffer = '';
 
-        streamResponse.on('data', (data) => {
+        const handleOnData = (data: any) => {
+            if (signal?.aborted) {
+                streamResponse.off('data', handleOnData);
+
+                onError({
+                    type: CompletionErrorType.Aborted,
+                    message: 'Stream aborted',
+                });
+
+                return;
+            }
+
+            if (errorHandled) {
+                streamResponse.off('data', handleOnData);
+
+                return;
+            }
+
             buffer += data.toString();
 
             while (true) {
-                let lineIndex = buffer.indexOf('\n');
+                const lineIndex = buffer.indexOf('\n');
                 if (lineIndex === -1) {
                     break;
                 }
@@ -177,13 +237,30 @@ export async function getChatCompletionAdvanced(
                         type: CompletionErrorType.Unknown,
                         message: 'Cannot parse response.',
                     });
+
+                    streamResponse.off('data', handleOnData);
                 }
             }
-        });
+        };
+
+        streamResponse.on('data', handleOnData);
 
         await new Promise<void>((resolve) => {
-            streamResponse.on('error', async () => {
-                console.log('STREAM error');
+            const handleOnError = async (err: Error) => {
+                streamResponse.off('data', handleOnData);
+
+                if (signal?.aborted) {
+                    onError({
+                        type: CompletionErrorType.Aborted,
+                        message: 'Stream aborted',
+                    });
+
+                    resolve();
+
+                    return;
+                }
+
+                console.log('STREAM error', err);
 
                 onError({
                     type: CompletionErrorType.Unknown,
@@ -191,13 +268,15 @@ export async function getChatCompletionAdvanced(
                 });
 
                 resolve();
-            });
+            };
 
-            streamResponse.on('end', async () => {
+            streamResponse.once('error', handleOnError);
+
+            const handleOnEnd = async () => {
                 resolve();
-            });
+            };
 
-            return;
+            streamResponse.once('end', handleOnEnd);
         });
 
         return;
@@ -238,7 +317,7 @@ export async function getChatCompletionSimple(
                     }, onError: error => {
                         reject(error);
                     },
-                    signal
+                    signal,
                 }
             );
         } catch (e) {

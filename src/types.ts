@@ -22,6 +22,7 @@ export enum CompletionErrorType {
     Unknown,
     NoResponse,
     OutOfTokens,
+    Aborted,
 }
 
 export type CustomCompletionError = {

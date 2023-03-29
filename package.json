@@ -1,10 +1,10 @@
 {
   "name": "@firtoz/openai-wrappers",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Wrappers for completion and chatCompletion. Supports streaming and basic error handling.",
   "scripts": {
     "build": "yarn tsc && echo build complete",
-    "test": "echo no tests && exit 0"
+    "test": "vitest run"
   },
   "publishConfig": {
     "access": "public"
@@ -26,10 +26,12 @@
   "devDependencies": {
     "@types/node": "^18.15.3",
     "cross-env": "^7.0.3",
+    "dotenv": "^16.0.3",
     "nodemon": "^2.0.21",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "5.0.2"
+    "typescript": "5.0.2",
+    "vitest": "^0.29.8"
   },
   "packageManager": "yarn@3.4.1",
   "dependencies": {
