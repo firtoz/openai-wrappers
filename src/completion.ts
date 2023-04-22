@@ -72,7 +72,7 @@ export async function getCompletionAdvanced(
             }, {
                 responseType: actualOptions.stream ? 'stream' : 'json',
                 signal,
-            }) as any;
+            });
         } catch (e: any) {
             if (e.isAxiosError) {
                 response = e.response;
@@ -270,7 +270,7 @@ export async function getCompletionSimple(
             }, {
                 responseType: actualOptions.stream ? 'stream' : 'json',
                 signal,
-            }) as any;
+            });
         } catch (e: any) {
             if (e.isAxiosError) {
                 response = e.response;

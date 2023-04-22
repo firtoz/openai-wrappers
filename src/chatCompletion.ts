@@ -85,7 +85,7 @@ export async function getChatCompletionAdvanced(
                 ...axiosConfig,
             };
 
-            response = await openai.createChatCompletion(actualOptions, actualAxiosConfig) as any;
+            response = await openai.createChatCompletion(actualOptions, actualAxiosConfig);
         } catch (e: any) {
             if (e.isAxiosError) {
                 response = e.response;
