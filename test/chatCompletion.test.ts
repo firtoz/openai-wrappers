@@ -1,6 +1,6 @@
 import {it, expect, describe, vi} from 'vitest';
 import {Configuration, OpenAIApi} from "openai";
-import {ChatStreamDelta, CompletionErrorType, CustomCompletionError, getChatCompletionAdvanced} from "../src";
+import {ChatStreamDelta, CompletionErrorType, getChatCompletionAdvanced} from "../src";
 
 
 const openai = new OpenAIApi(new Configuration({
@@ -9,8 +9,6 @@ const openai = new OpenAIApi(new Configuration({
 
 describe('getChatCompletionAdvanced', () => {
     it('should be cancellable before stream', async () => {
-        let resultText = '';
-
         const abort = new AbortController();
 
         const progressReceived = vi.fn();
@@ -51,9 +49,9 @@ describe('getChatCompletionAdvanced', () => {
 
         const abort = new AbortController();
 
-        let resolveFunction: () => void | null = null;
+        let resolveFunction: (() => void) | null = null;
 
-        let firstResponsePromise = new Promise<void>(resolve => {
+        const firstResponsePromise = new Promise<void>(resolve => {
             resolveFunction = resolve;
         });
 
