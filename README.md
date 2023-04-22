@@ -433,6 +433,7 @@ declare interface ChatCompletionAdvancedParams {
     onProgress: (result: ChatStreamDelta) => void;
     onError: (error: CustomCompletionError) => void;
     signal?: AbortSignal;
+    axiosConfig?: Omit<AxiosRequestConfig, 'signal' | 'responseType'>;
 }
 
 declare async function getChatCompletionAdvanced(
@@ -467,6 +468,7 @@ This function takes in the following parameters in a param object:
 - `onError`: A callback function that is called if an error occurs. The function takes in a `CustomCompletionError`
   object that represents the error.
 - `signal`: An optional `AbortSignal` instance to cancel the request if needed.
+- `axiosConfig`: An optional `AxiosRequestConfig` object for additional axios options.
 
 This function returns a Promise that resolves when the conversation is complete.
 

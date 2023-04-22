@@ -11,7 +11,7 @@ import {
     CompletionErrorType,
     CustomCompletionError
 } from "./types";
-import {AxiosResponse} from "axios";
+import {AxiosRequestConfig, AxiosResponse} from "axios";
 import {Stream} from "stream";
 import {IncomingMessage} from "http";
 import {sign} from "crypto";
@@ -32,6 +32,7 @@ export interface ChatCompletionAdvancedParams {
     onProgress: (result: ChatStreamDelta) => void;
     onError: (error: CustomCompletionError) => void;
     signal?: AbortSignal;
+    axiosConfig?: Omit<AxiosRequestConfig, 'signal' | 'responseType'>;
 }
 
 export async function getChatCompletionAdvanced(
@@ -42,6 +43,7 @@ export async function getChatCompletionAdvanced(
         onProgress,
         onError: handleOnError,
         signal,
+        axiosConfig = {},
     }: ChatCompletionAdvancedParams,
 ): Promise<void> {
     const actualOptions: CreateChatCompletionRequest = {
@@ -77,10 +79,13 @@ export async function getChatCompletionAdvanced(
         let response: AxiosResponse<CreateChatCompletionResponse | Stream> | undefined;
 
         try {
-            response = await openai.createChatCompletion(actualOptions, {
+            const actualAxiosConfig: AxiosRequestConfig = {
                 responseType: actualOptions.stream ? 'stream' : 'json',
                 signal,
-            }) as any;
+                ...axiosConfig,
+            };
+
+            response = await openai.createChatCompletion(actualOptions, actualAxiosConfig) as any;
         } catch (e: any) {
             if (e.isAxiosError) {
                 response = e.response;
