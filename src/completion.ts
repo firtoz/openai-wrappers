@@ -1,6 +1,6 @@
 import {CompletionError, CompletionErrorType, CompletionParams, CustomCompletionError} from "./types";
 import {CreateCompletionResponse, OpenAIApi} from "openai";
-import {AxiosResponse} from "axios";
+import {AxiosError, AxiosResponse} from "axios";
 
 import {Stream} from "stream";
 import {IncomingMessage} from "http";
@@ -73,13 +73,13 @@ export async function getCompletionAdvanced(
                 responseType: actualOptions.stream ? 'stream' : 'json',
                 signal,
             });
-        } catch (e: any) {
-            if (e.isAxiosError) {
-                response = e.response;
+        } catch (e: unknown) {
+            if ((e as AxiosError).isAxiosError) {
+                response = (e as AxiosError<CreateCompletionResponse | Stream>).response;
             } else {
                 onError({
                     type: CompletionErrorType.Unknown,
-                    message: e.message,
+                    message: (e as Error).message,
                 });
 
                 return;
@@ -149,7 +149,7 @@ export async function getCompletionAdvanced(
         }
 
         await new Promise<void>((resolve) => {
-            const handleOnData = async (data: any) => {
+            const handleOnData = async (data: unknown) => {
                 if (signal?.aborted) {
                     streamResponse.off('data', handleOnData);
 
@@ -167,7 +167,8 @@ export async function getCompletionAdvanced(
                     return;
                 }
 
-                const lines = data
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const lines = (data as any)
                     .toString()
                     .split('\n')
                     .filter((line: string) => line.trim() !== '');
@@ -180,9 +181,7 @@ export async function getCompletionAdvanced(
                     try {
                         const parsed = JSON.parse(message) as CreateCompletionResponse;
 
-                        if (onProgress) {
-                            onProgress(parsed);
-                        }
+                        onProgress(parsed);
                     } catch (error) {
                         console.error('Could not JSON parse stream message', message, error);
 
@@ -271,9 +270,9 @@ export async function getCompletionSimple(
                 responseType: actualOptions.stream ? 'stream' : 'json',
                 signal,
             });
-        } catch (e: any) {
-            if (e.isAxiosError) {
-                response = e.response;
+        } catch (e: unknown) {
+            if ((e as AxiosError).isAxiosError) {
+                response = (e as AxiosError<CreateCompletionResponse | Stream>).response;
             } else {
                 return '';
             }
@@ -300,8 +299,6 @@ export async function getCompletionSimple(
                 }
 
                 return '';
-            } else {
-                return '';
             }
 
             return '';
@@ -322,7 +319,7 @@ export async function getCompletionSimple(
                         }
                         try {
                             const parsed = JSON.parse(message) as CreateCompletionResponse;
-                            if (parsed.choices && parsed.choices.length > 0) {
+                            if (parsed.choices.length > 0) {
                                 const partialResponse = parsed.choices[0].text;
 
                                 latestResponseText += partialResponse;

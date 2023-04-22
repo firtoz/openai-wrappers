@@ -11,10 +11,9 @@ import {
     CompletionErrorType,
     CustomCompletionError
 } from "./types";
-import {AxiosRequestConfig, AxiosResponse} from "axios";
+import {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
 import {Stream} from "stream";
 import {IncomingMessage} from "http";
-import {sign} from "crypto";
 
 const defaultChatCompletionOptions: ChatCompletionOptions = {
     model: "gpt-3.5-turbo",
@@ -86,13 +85,13 @@ export async function getChatCompletionAdvanced(
             };
 
             response = await openai.createChatCompletion(actualOptions, actualAxiosConfig);
-        } catch (e: any) {
-            if (e.isAxiosError) {
-                response = e.response;
+        } catch (e: unknown) {
+            if ((e as AxiosError).isAxiosError) {
+                response = (e as AxiosError<CreateChatCompletionResponse | Stream>).response;
             } else {
                 onError({
                     type: CompletionErrorType.Unknown,
-                    message: e.message,
+                    message: (e as Error).message,
                 });
 
                 return;
@@ -136,7 +135,7 @@ export async function getChatCompletionAdvanced(
                 continue;
             }
 
-            const errorData = {...responseData} as any;
+            const errorData = {...responseData} as never;
 
             delete errorData['client'];
             delete errorData['req'];
@@ -166,7 +165,7 @@ export async function getChatCompletionAdvanced(
                             content: item.message?.content,
                         },
                         index: item.index,
-                        finish_reason: item.finish_reason ? item.finish_reason as any : null,
+                        finish_reason: item.finish_reason ? item.finish_reason as ChatStreamDeltaChoice['finish_reason'] : null,
                     };
 
                     return choice;
@@ -190,6 +189,7 @@ export async function getChatCompletionAdvanced(
 
         let buffer = '';
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleOnData = (data: any) => {
             if (signal?.aborted) {
                 streamResponse.off('data', handleOnData);
@@ -232,9 +232,7 @@ export async function getChatCompletionAdvanced(
                 try {
                     const parsed = JSON.parse(message) as ChatStreamDelta;
 
-                    if (onProgress) {
-                        onProgress(parsed);
-                    }
+                    onProgress(parsed);
                 } catch (error) {
                     console.error('Could not JSON parse stream message', message, error);
 

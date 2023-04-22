@@ -1,10 +1,10 @@
 {
   "name": "@firtoz/openai-wrappers",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Wrappers for completion and chatCompletion. Supports streaming and basic error handling.",
   "scripts": {
     "build": "yarn tsc && echo build complete",
-    "test": "vitest run"
+    "test": "eslint . && vitest run"
   },
   "publishConfig": {
     "access": "public"
@@ -24,9 +24,13 @@
   "types": "lib/index.d.ts",
   "main": "lib/index.js",
   "devDependencies": {
+    "@types/eslint": "^8",
     "@types/node": "^18.15.13",
+    "@typescript-eslint/eslint-plugin": "^5.59.0",
+    "@typescript-eslint/parser": "^5.59.0",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.3",
+    "eslint": "^8.39.0",
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
