@@ -28,6 +28,7 @@ export enum CompletionErrorType {
 export type CustomCompletionError = {
     type: CompletionErrorType;
     message: string;
+    error?: Error;
 }
 
 export interface ChatCompletionOptions extends Omit<CreateChatCompletionRequest, 'messages' | 'model'> {

@@ -11,7 +11,7 @@ import {
     CompletionErrorType,
     CustomCompletionError
 } from "./types";
-import {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
+import {AxiosRequestConfig, AxiosResponse, isAxiosError} from "axios";
 import {Stream} from "stream";
 import {IncomingMessage} from "http";
 
@@ -86,8 +86,8 @@ export async function getChatCompletionAdvanced(
 
             response = await openai.createChatCompletion(actualOptions, actualAxiosConfig);
         } catch (e: unknown) {
-            if ((e as AxiosError).isAxiosError) {
-                response = (e as AxiosError<CreateChatCompletionResponse | Stream>).response;
+            if (isAxiosError<CreateChatCompletionResponse | Stream>(e)) {
+                response = e.response;
             } else {
                 onError({
                     type: CompletionErrorType.Unknown,

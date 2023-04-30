@@ -1,6 +1,6 @@
 import {CompletionError, CompletionErrorType, CompletionParams, CustomCompletionError} from "./types";
 import {CreateCompletionResponse, OpenAIApi} from "openai";
-import {AxiosError, AxiosResponse} from "axios";
+import {AxiosResponse, isAxiosError} from "axios";
 
 import {Stream} from "stream";
 import {IncomingMessage} from "http";
@@ -74,12 +74,13 @@ export async function getCompletionAdvanced(
                 signal,
             });
         } catch (e: unknown) {
-            if ((e as AxiosError).isAxiosError) {
-                response = (e as AxiosError<CreateCompletionResponse | Stream>).response;
+            if (isAxiosError<CreateCompletionResponse | Stream>(e)) {
+                response = e.response;
             } else {
                 onError({
                     type: CompletionErrorType.Unknown,
                     message: (e as Error).message,
+                    error: e as Error,
                 });
 
                 return;
@@ -218,6 +219,7 @@ export async function getCompletionAdvanced(
                 onError({
                     type: CompletionErrorType.Unknown,
                     message: 'Stream just had an error.',
+                    error: err,
                 });
 
                 resolve();
@@ -271,8 +273,8 @@ export async function getCompletionSimple(
                 signal,
             });
         } catch (e: unknown) {
-            if ((e as AxiosError).isAxiosError) {
-                response = (e as AxiosError<CreateCompletionResponse | Stream>).response;
+            if (isAxiosError<CreateCompletionResponse | Stream>(e)) {
+                response = e.response;
             } else {
                 return '';
             }
