@@ -1,6 +1,6 @@
 {
   "name": "@firtoz/openai-wrappers",
-  "version": "0.2.4",
+  "version": "1.0.0",
   "description": "Wrappers for completion and chatCompletion. Supports streaming and basic error handling.",
   "scripts": {
     "build": "yarn tsc && echo build complete",
