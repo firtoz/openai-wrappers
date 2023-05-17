@@ -4,6 +4,7 @@
   "description": "Wrappers for completion and chatCompletion. Supports streaming and basic error handling.",
   "scripts": {
     "build": "yarn tsc && echo build complete",
+    "release": "yarn build && changeset publish",
     "test": "eslint . && vitest run"
   },
   "publishConfig": {
@@ -24,6 +25,7 @@
   "types": "lib/index.d.ts",
   "main": "lib/index.js",
   "devDependencies": {
+    "@changesets/cli": "^2.26.1",
     "@types/eslint": "^8",
     "@types/node": "^18.15.13",
     "@typescript-eslint/eslint-plugin": "^5.59.0",

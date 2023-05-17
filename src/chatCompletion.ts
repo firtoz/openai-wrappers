@@ -14,6 +14,7 @@ import {
 import {AxiosRequestConfig, AxiosResponse, isAxiosError} from "axios";
 import {Stream} from "stream";
 import {IncomingMessage} from "http";
+import fetchAdapter from "./utils/fetchAdapter";
 
 const defaultChatCompletionOptions: ChatCompletionOptions = {
     model: "gpt-3.5-turbo",
@@ -83,6 +84,13 @@ export async function getChatCompletionAdvanced(
                 signal,
                 ...axiosConfig,
             };
+
+            if (actualAxiosConfig.adapter === undefined) {
+                // if we're in a browser, we need to use the fetch adapter
+                if (typeof window !== 'undefined') {
+                    actualAxiosConfig.adapter = fetchAdapter;
+                }
+            }
 
             response = await openai.createChatCompletion(actualOptions, actualAxiosConfig);
         } catch (e: unknown) {

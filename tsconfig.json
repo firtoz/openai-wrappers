@@ -2,7 +2,8 @@
   "compilerOptions": {
     "lib": [
       "esnext",
-      "dom"
+      "dom",
+      "dom.iterable",
     ],
     "module": "commonjs",
     "target": "ESNext",
