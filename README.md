@@ -1,7 +1,7 @@
 # @firtoz/openai-wrappers
 
 This package provides a set of functions for working with the OpenAI API. Specifically, it provides functions for
-generating text completions and chat completions using the GPT-3 language model.
+generating text completions and chat completions using the GPT-3 and 4 language models.
 
 The package exports two sets of functions: `getCompletionAdvanced` and `getCompletionSimple` for text completions,
 and `getChatCompletionAdvanced` and `getChatCompletionSimple` for chat completions. The "advanced" functions provide
