@@ -347,79 +347,6 @@ Will print (click the arrow on the left to expand):
 
 </details>
 
-## OpenAI Completion Functions
-
-### getCompletionAdvanced
-
-```ts
-export interface CompletionAdvancedParams {
-    openai: OpenAIApi;
-    prompt: string;
-    options: Partial<CompletionParams>;
-    onProgress: (result: CreateCompletionResponse) => void;
-    onError: (error: CustomCompletionError) => void;
-    signal?: AbortSignal;
-}
-
-declare async function getCompletionAdvanced(
-    {openai, prompt, options = {}, onProgress, onError, signal}: CompletionAdvancedParams,
-): Promise<void>;
-
-```
-
-This function generates text completions using the OpenAI API with advanced options.
-It takes the following parameters as a param object:
-
-- `openai`: An instance of the `OpenAIApi` class from the `openai` package.
-- `prompt`: The text prompt to generate completions for.
-- `options`: An optional object containing additional options for the completion. The available options are:
-    - `model`: The ID of the model to use for the completion. Defaults to `"text-davinci-003"`.
-    - `temperature`: Controls the "creativity" of the generated text. Higher values result in more creative output.
-      Defaults to `0.7`.
-    - `max_tokens`: The maximum number of tokens to generate in the completion. Defaults to `512`.
-    - `top_p`: Controls the diversity of the generated text. Higher values result in more diverse output. Defaults
-      to `0.9`.
-    - `frequency_penalty`: Controls the repetition of the generated text. Higher values result in less repetition.
-      Defaults to `0`.
-    - `presence_penalty`: Controls the relevance of the generated text to the prompt. Higher values result in more
-      relevant output. Defaults to `0`.
-    - `stream`: Whether to use streaming mode for the completion. Defaults to `false`.
-- `onProgress`: A callback function that is called with each progress update from the API. The function is passed
-  a `CreateCompletionResponse` object.
-- `onError`: A callback function that is called if an error occurs during the completion. The function is passed
-  a `CustomCompletionError` object.
-- `signal`: An optional `AbortSignal` instance to cancel the request if needed.
-
-### `getCompletionSimple`
-
-```ts
-declare interface CompletionSimpleParams {
-    openai: OpenAIApi;
-    prompt: string;
-    options?: Partial<CompletionParams>;
-    onProgress?: (result: string, finished: boolean) => void;
-    signal?: AbortSignal;
-}
-
-declare async function getCompletionSimple(
-    {openai, prompt, options = {}, onProgress, signal}: CompletionSimpleParams,
-): Promise<string>;
-```
-
-This function generates text completions using the OpenAI API with simple options.
-It takes the following parameters as a param object:
-
-- `openai`: An instance of the `OpenAIApi` class from the `openai` package.
-- `prompt`: The text prompt to generate completions for.
-- `options`: An optional object containing additional options for the completion. The available options are the same as
-  for `getCompletionAdvanced`.
-- `onProgress`: An optional callback function that is called with each progress update from the API. The function is
-  passed a string containing the latest generated text and a boolean indicating whether the completion is finished.
-- `signal`: An optional `AbortSignal` instance to cancel the request if needed.
-
-Both functions return a Promise that resolves to a string containing the generated text completion. If an error occurs
-during the completion, the Promise will be rejected with an error object.
-
 ## OpenAI Chat Completion Functions
 
 ### `getChatCompletionAdvanced`
@@ -499,3 +426,78 @@ This function takes in the following parameters in a param object:
 - `signal`: An optional `AbortSignal` instance to cancel the request if needed.
 
 This function returns a Promise that resolves with the final response from the conversation.
+
+
+## OpenAI Completion Functions
+
+### getCompletionAdvanced
+
+```ts
+export interface CompletionAdvancedParams {
+    openai: OpenAIApi;
+    prompt: string;
+    options: Partial<CompletionParams>;
+    onProgress: (result: CreateCompletionResponse) => void;
+    onError: (error: CustomCompletionError) => void;
+    signal?: AbortSignal;
+}
+
+declare async function getCompletionAdvanced(
+    {openai, prompt, options = {}, onProgress, onError, signal}: CompletionAdvancedParams,
+): Promise<void>;
+
+```
+
+This function generates text completions using the OpenAI API with advanced options.
+It takes the following parameters as a param object:
+
+- `openai`: An instance of the `OpenAIApi` class from the `openai` package.
+- `prompt`: The text prompt to generate completions for.
+- `options`: An optional object containing additional options for the completion. The available options are:
+    - `model`: The ID of the model to use for the completion. Defaults to `"text-davinci-003"`.
+    - `temperature`: Controls the "creativity" of the generated text. Higher values result in more creative output.
+      Defaults to `0.7`.
+    - `max_tokens`: The maximum number of tokens to generate in the completion. Defaults to `512`.
+    - `top_p`: Controls the diversity of the generated text. Higher values result in more diverse output. Defaults
+      to `0.9`.
+    - `frequency_penalty`: Controls the repetition of the generated text. Higher values result in less repetition.
+      Defaults to `0`.
+    - `presence_penalty`: Controls the relevance of the generated text to the prompt. Higher values result in more
+      relevant output. Defaults to `0`.
+    - `stream`: Whether to use streaming mode for the completion. Defaults to `false`.
+- `onProgress`: A callback function that is called with each progress update from the API. The function is passed
+  a `CreateCompletionResponse` object.
+- `onError`: A callback function that is called if an error occurs during the completion. The function is passed
+  a `CustomCompletionError` object.
+- `signal`: An optional `AbortSignal` instance to cancel the request if needed.
+
+### `getCompletionSimple`
+
+```ts
+declare interface CompletionSimpleParams {
+    openai: OpenAIApi;
+    prompt: string;
+    options?: Partial<CompletionParams>;
+    onProgress?: (result: string, finished: boolean) => void;
+    signal?: AbortSignal;
+}
+
+declare async function getCompletionSimple(
+    {openai, prompt, options = {}, onProgress, signal}: CompletionSimpleParams,
+): Promise<string>;
+```
+
+This function generates text completions using the OpenAI API with simple options.
+It takes the following parameters as a param object:
+
+- `openai`: An instance of the `OpenAIApi` class from the `openai` package.
+- `prompt`: The text prompt to generate completions for.
+- `options`: An optional object containing additional options for the completion. The available options are the same as
+  for `getCompletionAdvanced`.
+- `onProgress`: An optional callback function that is called with each progress update from the API. The function is
+  passed a string containing the latest generated text and a boolean indicating whether the completion is finished.
+- `signal`: An optional `AbortSignal` instance to cancel the request if needed.
+
+Both functions return a Promise that resolves to a string containing the generated text completion. If an error occurs
+during the completion, the Promise will be rejected with an error object.
+
