@@ -7,6 +7,11 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+# allow the action to create a pull request and to push to the branch
+permissions:
+  pull-requests: write
+  contents: write
+
 jobs:
   release:
     name: Release
