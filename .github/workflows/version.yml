@@ -7,13 +7,14 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
-# allow the action to create a pull request
+# allow the action to create a pull request and to push to the main branch
 permissions:
   pull-requests: write
+  contents: write
 
 jobs:
-  release:
-    name: Release
+  version:
+    name: Version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
