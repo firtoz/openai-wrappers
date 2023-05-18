@@ -9,7 +9,6 @@ import {
 } from "axios";
 
 import {PassThrough} from 'stream';
-import {Buffer} from "buffer";
 
 function createTimeoutPromise(config: InternalAxiosRequestConfig, request: Request): Promise<AxiosError> {
     return new Promise((resolve) => {
