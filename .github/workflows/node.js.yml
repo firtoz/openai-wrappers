@@ -25,8 +25,8 @@ jobs:
             return { isMaintainer: !!maintainer };
 
   request-approval:
-    if: needs.check-maintainer.outputs.isMaintainer == 'false'
     needs: check-maintainer
+    if: needs.check-maintainer.outputs.isMaintainer == false
     runs-on: ubuntu-latest
     steps:
       - name: Add PR comment for manual approval
@@ -43,7 +43,7 @@ jobs:
 
   build:
     needs: check-maintainer
-    if: needs.check-maintainer.outputs.isMaintainer == 'true' || github.event_name == 'push'
+    if: needs.check-maintainer.outputs.isMaintainer == true || github.event_name == 'push'
     runs-on: ubuntu-latest
 
     strategy:
