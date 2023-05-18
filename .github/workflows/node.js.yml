@@ -10,7 +10,7 @@ jobs:
   check-admin:
     runs-on: ubuntu-latest
     outputs:
-      isAdmin: ${{ steps.checkUser.outputs.check-result }}
+      isAdmin: ${{ steps.checkUser.outputs.require-result }}
     steps:
       - uses: actions-cool/check-user-permission@main
         id: checkUser
