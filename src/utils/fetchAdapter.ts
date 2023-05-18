@@ -9,7 +9,6 @@ import {
 } from "axios";
 
 import {PassThrough} from 'stream';
-import {Buffer} from "buffer";
 
 function createTimeoutPromise(config: InternalAxiosRequestConfig, request: Request): Promise<AxiosError> {
     return new Promise((resolve) => {
@@ -204,7 +203,7 @@ async function getResponse(
     };
 
     if (stageOne.status >= 200 && stageOne.status !== 204) {
-        response.data = getDataByResponseType({
+        response.data = await getDataByResponseType({
             request: request,
             response: stageOne,
             abortController: abortController,
