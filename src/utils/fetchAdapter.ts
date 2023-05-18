@@ -204,7 +204,7 @@ async function getResponse(
     };
 
     if (stageOne.status >= 200 && stageOne.status !== 204) {
-        response.data = getDataByResponseType({
+        response.data = await getDataByResponseType({
             request: request,
             response: stageOne,
             abortController: abortController,
