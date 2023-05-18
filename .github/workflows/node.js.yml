@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Run Tests If Admin
 
 on:
   push:
@@ -7,26 +7,19 @@ on:
     branches: [ "main" ]
 
 jobs:
-  check-maintainer:
+  check-admin:
     runs-on: ubuntu-latest
     outputs:
-      isMaintainer: ${{ steps.check-maintainer.outputs.isMaintainer }}
+      isAdmin: ${{ steps.checkUser.outputs.check-result }}
     steps:
-      - name: Check if actor is a maintainer
-        id: check-maintainer
-        uses: actions/github-script@v6
+      - uses: actions-cool/check-user-permission@main
+        id: checkUser
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const collaborators = await github.rest.repos.listCollaborators(context.repo);
-            const maintainer = collaborators.data.find(
-              (collaborator) => collaborator.login === github.actor && collaborator.permissions.admin
-            );
-            return { isMaintainer: !!maintainer };
+          require: 'admin'
 
   request-approval:
-    if: needs.check-maintainer.outputs.isMaintainer == 'false'
-    needs: check-maintainer
+    needs: check-admin
+    if: needs.check-admin.outputs.isAdmin == 'false'
     runs-on: ubuntu-latest
     steps:
       - name: Add PR comment for manual approval
@@ -42,8 +35,8 @@ jobs:
             });
 
   build:
-    needs: check-maintainer
-    if: needs.check-maintainer.outputs.isMaintainer == 'true' || github.event_name == 'push'
+    needs: check-admin
+    if: needs.check-admin.outputs.isAdmin == 'true' || github.event_name == 'push'
     runs-on: ubuntu-latest
 
     strategy:
