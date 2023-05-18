@@ -17,16 +17,18 @@ jobs:
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+#          returns isMaintainer as 'true' or 'false'
           script: |
-            const collaborators = await github.rest.repos.listCollaborators(context.repo);
-            const maintainer = collaborators.data.find(
-              (collaborator) => collaborator.login === github.actor && collaborator.permissions.admin
-            );
-            return { isMaintainer: !!maintainer };
+            const { data: isMaintainer } = await github.rest.teams.listMembersInOrg({
+              org: context.repo.owner,
+              team_slug: 'maintainers',
+              username: context.actor
+            });
+            return { isMaintainer: isMaintainer.length > 0 };
 
   request-approval:
     needs: check-maintainer
-    if: needs.check-maintainer.outputs.isMaintainer == false
+    if: needs.check-maintainer.outputs.isMaintainer == 'false'
     runs-on: ubuntu-latest
     steps:
       - name: Add PR comment for manual approval
@@ -43,7 +45,7 @@ jobs:
 
   build:
     needs: check-maintainer
-    if: needs.check-maintainer.outputs.isMaintainer == true || github.event_name == 'push'
+    if: needs.check-maintainer.outputs.isMaintainer == 'true' || github.event_name == 'push'
     runs-on: ubuntu-latest
 
     strategy:
