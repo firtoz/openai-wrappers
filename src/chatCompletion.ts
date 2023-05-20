@@ -13,8 +13,8 @@ import {
 } from "./types";
 import {AxiosRequestConfig, AxiosResponse, isAxiosError} from "axios";
 import {Stream} from "stream";
-import {IncomingMessage} from "http";
 import fetchAdapter from "./utils/fetchAdapter";
+import {IncomingMessageWithOptionalSocket} from "./incomingMessageWithOptionalSocket";
 
 const defaultChatCompletionOptions: ChatCompletionOptions = {
     model: "gpt-3.5-turbo",
@@ -184,13 +184,13 @@ export async function getChatCompletionAdvanced(
             return;
         }
 
-        const streamResponse = responseData as IncomingMessage;
+        const streamResponse = responseData as IncomingMessageWithOptionalSocket;
         if (signal) {
             if (signal.aborted) {
-                streamResponse.socket.end();
+                streamResponse.socket?.end();
             } else {
                 signal.addEventListener('abort', () => {
-                    streamResponse.socket.end();
+                    streamResponse.socket?.end();
                 });
             }
         }

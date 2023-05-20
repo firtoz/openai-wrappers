@@ -3,7 +3,7 @@ import {CreateCompletionResponse, OpenAIApi} from "openai";
 import {AxiosResponse, isAxiosError} from "axios";
 
 import {Stream} from "stream";
-import {IncomingMessage} from "http";
+import {IncomingMessageWithOptionalSocket} from "./incomingMessageWithOptionalSocket";
 
 const defaultOptions: CompletionParams = {
     model: "text-davinci-003",
@@ -138,13 +138,13 @@ export async function getCompletionAdvanced(
             return;
         }
 
-        const streamResponse = responseData as IncomingMessage;
+        const streamResponse = responseData as IncomingMessageWithOptionalSocket;
         if (signal) {
             if (signal.aborted) {
-                streamResponse.socket.end();
+                streamResponse.socket?.end();
             } else {
                 signal.addEventListener('abort', () => {
-                    streamResponse.socket.end();
+                    streamResponse.socket?.end();
                 });
             }
         }
