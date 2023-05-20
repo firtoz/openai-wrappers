@@ -1,5 +1,11 @@
 # @firtoz/openai-wrappers
 
+## 1.0.2
+
+### Patch Changes
+
+- a6487f1: Make sure to check whether a socket exists when the signal is aborted
+
 ## 1.0.1
 
 ### Patch Changes
