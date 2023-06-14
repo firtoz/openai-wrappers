@@ -8,7 +8,7 @@ const openai = new OpenAIApi(new Configuration({
 }));
 
 describe('getChatCompletionAdvanced', () => {
-    it.only('should allow functions', async () => {
+    it('should allow functions', async () => {
         const errorReceived = vi.fn();
         const progressReceived = vi.fn();
 
