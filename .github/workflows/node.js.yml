@@ -1,10 +1,22 @@
 name: Run Tests If Admin
 
+# run on push to main or production, or on PR open, or manually
 on:
   push:
     branches: [ "main", "production" ]
   pull_request_target:
     branches: [ "main" ]
+    types: [ opened ]
+  workflow_dispatch:
+    inputs:
+      # This is the name of the input
+      # The description is optional
+      # The default value is optional
+      # The required is optional, and defaults to false
+      pr-number:
+        description: 'The PR number to approve'
+        required: true
+        default: '0'
 env:
   HEAD_OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
 
@@ -26,7 +38,8 @@ jobs:
 
   request-approval:
     needs: check-admin
-    if: needs.check-admin.outputs.isAdmin == 'false'
+    # run only if not an admin, and only on the PR open event
+    if: needs.check-admin.outputs.isAdmin == 'false' && github.event_name == 'pull_request_target' && github.event.action == 'opened'
     runs-on: ubuntu-latest
     steps:
       - name: Add PR comment for manual approval
@@ -63,3 +76,22 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       - run: yarn build
+
+  # run the manual approval workflow
+  approve:
+    needs: check-admin
+    # run only if an admin, and only on the workflow_dispatch event
+    if: needs.check-admin.outputs.isAdmin == 'true' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Approve PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: ${{ github.event.inputs.pr-number }},
+              event: 'APPROVE',
+            });
