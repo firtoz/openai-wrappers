@@ -1,5 +1,11 @@
 # @firtoz/openai-wrappers
 
+## 2.0.0
+
+### Major Changes
+
+- 93572f0: Support new models: https://openai.com/blog/function-calling-and-other-api-updates
+
 ## 1.0.2
 
 ### Patch Changes
