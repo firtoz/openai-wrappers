@@ -5,6 +5,8 @@ on:
     branches: [ "main", "production" ]
   pull_request_target:
     branches: [ "main" ]
+env:
+  HEAD_OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
 
 # allow pr comment adding
 permissions:
@@ -31,12 +33,13 @@ jobs:
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          # in the body, ping the repo owner to run the manual approval workflow
           script: |
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: "This PR requires manual approval by a maintainer. @maintainer, please review the changes and trigger the 'Manual Approval' workflow if everything looks good."
+              body: "This PR requires manual approval by a maintainer. @${{ env.HEAD_OWNER }}, please run the manual approval workflow.",
             });
 
   build:
