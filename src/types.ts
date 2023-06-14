@@ -1,5 +1,9 @@
 import {CreateChatCompletionRequest, CreateCompletionRequest} from "openai";
-import {ChatCompletionResponseMessageRoleEnum, CreateCompletionResponseUsage} from "openai/api";
+import {
+    ChatCompletionResponseMessage,
+    ChatCompletionResponseMessageRoleEnum,
+    CreateCompletionResponseUsage
+} from "openai/api";
 
 export type CompletionError = {
     error?: {
@@ -11,8 +15,8 @@ export type CompletionError = {
 };
 
 export type ModelName = 'text-davinci-003'
-export type ChatModelName = 'gpt-3.5-turbo-0301' | 'gpt-3.5-turbo'
-    | 'gpt-4' | 'gpt-4-32k'
+export type ChatModelName = 'gpt-3.5-turbo-0301' | 'gpt-3.5-turbo' | 'gpt-3.5-turbo-0613' | 'gpt-3.5-turbo-16k'
+    | 'gpt-4' | 'gpt-4-32k' | 'gpt-4-0613' | 'gpt-4-32k-0613'
 
 export type CompletionParams = Omit<CreateCompletionRequest, 'prompt' | 'model'> & {
     model: ModelName,
@@ -36,12 +40,11 @@ export interface ChatCompletionOptions extends Omit<CreateChatCompletionRequest,
 }
 
 export type ChatStreamDeltaChoice = {
-    delta: {
+    delta: Omit<ChatCompletionResponseMessage, 'role'> & {
         role?: ChatCompletionResponseMessageRoleEnum;
-        content?: string;
     },
     index: number | undefined;
-    finish_reason: null | 'stop' | 'length';
+    finish_reason: null | 'stop' | 'length' | 'function_call';
 };
 
 export type ChatStreamDelta = {

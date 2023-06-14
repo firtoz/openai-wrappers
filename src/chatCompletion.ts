@@ -15,6 +15,7 @@ import {AxiosRequestConfig, AxiosResponse, isAxiosError} from "axios";
 import {Stream} from "stream";
 import fetchAdapter from "./utils/fetchAdapter";
 import {IncomingMessageWithOptionalSocket} from "./incomingMessageWithOptionalSocket";
+import {CreateChatCompletionResponseChoicesInner} from "openai/dist/api";
 
 const defaultChatCompletionOptions: ChatCompletionOptions = {
     model: "gpt-3.5-turbo",
@@ -166,14 +167,17 @@ export async function getChatCompletionAdvanced(
                 model: completionResponse.model,
                 object: completionResponse.object,
                 id: completionResponse.id,
-                choices: completionResponse.choices.map(item => {
+                choices: completionResponse.choices.map((item: CreateChatCompletionResponseChoicesInner) => {
+                    const message = item.message;
+                    const finishReason = item.finish_reason;
                     const choice: ChatStreamDeltaChoice = {
                         delta: {
-                            role: item.message?.role,
-                            content: item.message?.content,
+                            role: message?.role,
+                            content: message?.content,
+                            function_call: message?.function_call,
                         },
                         index: item.index,
-                        finish_reason: item.finish_reason ? item.finish_reason as ChatStreamDeltaChoice['finish_reason'] : null,
+                        finish_reason: finishReason ? finishReason as ChatStreamDeltaChoice['finish_reason'] : null,
                     };
 
                     return choice;

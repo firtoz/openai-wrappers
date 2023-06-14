@@ -8,6 +8,106 @@ const openai = new OpenAIApi(new Configuration({
 }));
 
 describe('getChatCompletionAdvanced', () => {
+    it.only('should allow functions', async () => {
+        const errorReceived = vi.fn();
+        const progressReceived = vi.fn();
+
+        const promise = getChatCompletionAdvanced({
+            openai,
+            options: {
+                temperature: 0,
+                model: 'gpt-3.5-turbo-0613',
+                stream: false,
+                functions: [
+                    {
+                        "name": "get_current_weather",
+                        "description": "Get the current weather in a given location",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "location": {
+                                    "type": "string",
+                                    "description": "The city and state, e.g. San Francisco, CA",
+                                },
+                                "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                            },
+                            "required": ["location"],
+                        },
+                    }
+                ],
+            },
+            messages: [
+                {
+                    "role": "user",
+                    "content": "What's the weather like in London?",
+                },
+            ],
+            onError: errorReceived,
+            onProgress: progressReceived,
+        });
+
+        await promise;
+
+        expect(errorReceived).not.toBeCalled();
+        expect(progressReceived).toBeCalled();
+        expect(progressReceived.mock.calls).toHaveLength(1);
+
+        /* example output:
+{
+  "created": 1686738426,
+  "model": "gpt-3.5-turbo-0613",
+  "object": "chat.completion",
+  "id": "chatcmpl-7RI0Qk2aDXAoTuduw4NtMTR5kx1V1",
+  "choices": [
+    {
+      "delta": {
+        "role": "assistant",
+        "content": null,
+        "function_call": {
+          "name": "get_current_weather",
+          "arguments": "{\n  \"location\": \"London\"\n}"
+        }
+      },
+      "index": 0,
+      "finish_reason": "function_call"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 82,
+    "completion_tokens": 16,
+    "total_tokens": 98
+  }
+}
+*/
+        // instead of numbers and ids use regex
+        // TODO: maybe need to do that for the usage object too
+        expect(progressReceived.mock.calls[0][0]).to.toMatchObject({
+            "created": expect.any(Number),
+            "model": "gpt-3.5-turbo-0613",
+            "object": "chat.completion",
+            "id": expect.stringMatching(/^chatcmpl-/),
+            "choices": [
+                {
+                    "delta": {
+                        "role": "assistant",
+                        "content": null,
+                        "function_call": {
+                            "name": "get_current_weather",
+                            "arguments": "{\n  \"location\": \"London\"\n}"
+                        }
+                    },
+                    "index": 0,
+                    "finish_reason": "function_call"
+                }
+            ],
+            "usage": {
+                "prompt_tokens": 82,
+                "completion_tokens": 16,
+                "total_tokens": 98,
+            }
+        });
+    }, 10000)
+
     it('should be cancellable before stream', async () => {
         const abort = new AbortController();
 
