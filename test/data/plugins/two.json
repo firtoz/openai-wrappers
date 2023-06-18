@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "Search",
+  "name_for_human": "Search",
+  "description_for_model": "A tool to search the web. This is how you get information about the state of the world. When the user asks for something that can be searched for, you have to use this. Prefer this especially if the user asks for any recent information.",
+  "description_for_human": "A tool to search the web.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "two-openapi.json",
+    "has_user_authentication": false
+  },
+  "logo_url": "https://media.discordapp.net/attachments/1088203740378574878/1100488839123972116/Ephemeros_To-do_app_logo_concept_8803460c-1072-405d-b14b-016c6a52dc8f.png?width=993&height=993",
+  "contact_email": "hello@example.com",
+  "legal_info_url": "https://example.com"
+}

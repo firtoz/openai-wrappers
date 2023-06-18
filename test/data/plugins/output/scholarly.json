@@ -1,0 +1,282 @@
+{
+  "url": "https://scholarly.maila.ai/.well-known/ai-plugin.json",
+  "manifest": {
+    "schema_version": "v1",
+    "name_for_model": "scholarly",
+    "name_for_human": "Scholarly",
+    "description_for_model": "Scholarly is a search engine for finding summaries of research papers.",
+    "description_for_human": "Scholarly is an AI-powered search engine for exploring scientific literature.",
+    "auth": {
+      "type": "none"
+    },
+    "api": {
+      "type": "openapi",
+      "url": "https://scholarly.maila.ai/.well-known/openapi.yaml",
+      "has_user_authentication": false
+    },
+    "logo_url": "https://scholarly.maila.ai/.well-known/logo.png",
+    "contact_email": "kevin@maila.ai",
+    "legal_info_url": "https://scholarly.maila.ai/legal"
+  },
+  "parsedYaml": {
+    "openapi": "3.0.3",
+    "info": {
+      "title": "Scholarly",
+      "description": "AI-powered Scholar Search Engine to search for the latest research papers.",
+      "version": "1.0.0",
+      "contact": {
+        "email": "kevin@maila.ai"
+      }
+    },
+    "servers": [
+      {
+        "url": "https://scholarly.maila.ai"
+      }
+    ],
+    "paths": {
+      "/search": {
+        "get": {
+          "operationId": "searchGet",
+          "summary": "Search scientific research papers and fetch meta data.",
+          "description": "Scholarly using the provided query and returns the search results, including the title, summary, abstract, url, publication date, and citation count of each paper.\n",
+          "parameters": [
+            {
+              "name": "q",
+              "in": "query",
+              "description": "Search query",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "example": "machine learning"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "description": "The title of the paper"
+                        },
+                        "summary": {
+                          "type": "string",
+                          "description": "The summary of the paper"
+                        },
+                        "abstract": {
+                          "type": "string",
+                          "description": "The abstract of the paper"
+                        },
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "The URL of the paper"
+                        },
+                        "publicationDate": {
+                          "type": "string",
+                          "description": "The publication date of the paper"
+                        },
+                        "citationCount": {
+                          "type": "integer",
+                          "description": "The citation count of the paper"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "description": "Error message"
+                      }
+                    },
+                    "example": {
+                      "error": "No query provided"
+                    }
+                  }
+                }
+              }
+            },
+            "default": {
+              "description": "Error fetching search results",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "description": "Error message"
+                      }
+                    },
+                    "example": {
+                      "error": "Error fetching search results"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "rebuiltPaths": {
+    "/search": {
+      "get": {
+        "operationId": "searchGet",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Search query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "machine learning"
+          }
+        ]
+      }
+    }
+  },
+  "operationInfo": {
+    "searchGet": {
+      "method": "get",
+      "path": "/search",
+      "operation": {
+        "operationId": "searchGet",
+        "summary": "Search scientific research papers and fetch meta data.",
+        "description": "Scholarly using the provided query and returns the search results, including the title, summary, abstract, url, publication date, and citation count of each paper.\n",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Search query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "machine learning"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "The title of the paper"
+                      },
+                      "summary": {
+                        "type": "string",
+                        "description": "The summary of the paper"
+                      },
+                      "abstract": {
+                        "type": "string",
+                        "description": "The abstract of the paper"
+                      },
+                      "url": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "The URL of the paper"
+                      },
+                      "publicationDate": {
+                        "type": "string",
+                        "description": "The publication date of the paper"
+                      },
+                      "citationCount": {
+                        "type": "integer",
+                        "description": "The citation count of the paper"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message"
+                    }
+                  },
+                  "example": {
+                    "error": "No query provided"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error fetching search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message"
+                    }
+                  },
+                  "example": {
+                    "error": "Error fetching search results"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "namespaceInfo": {
+    "name": "scholarly",
+    "functions": [
+      {
+        "name": "searchGet",
+        "description": "Search scientific research papers and fetch meta data. Scholarly using the provided query and returns the search results, including the title, summary, abstract, url, publication date, and citation count of each paper.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "q": {
+              "type": "string",
+              "description": "Search query",
+              "example": "machine learning"
+            }
+          },
+          "required": [
+            "q"
+          ]
+        }
+      }
+    ]
+  }
+}

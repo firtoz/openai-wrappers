@@ -1,0 +1,75 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "QueryAnything",
+    "version": "0.0.0"
+  },
+  "paths": {
+    "/search": {
+      "get": {
+        "operationId": "search",
+        "tags": [
+          ""
+        ],
+        "summary": "Searches the web for the given query.",
+        "parameters": [
+          {
+            "description": "The URL for the search engine to use",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The URL for the search engine to use",
+              "example": "https://news.ycombinator.com/"
+            },
+            "name": "url",
+            "in": "query"
+          },
+          {
+            "description": "Query to search for in the url",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Query to search for in the url",
+              "example": "are there any new posts about web development today"
+            },
+            "name": "query",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "response": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "response"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "properties"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

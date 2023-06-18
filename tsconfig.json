@@ -16,11 +16,6 @@
     "declaration": true,
     "sourceMap": true,
     "moduleResolution": "node",
-    "paths": {
-      "your-package-name": [
-        "./src/index.ts"
-      ]
-    }
   },
   "include": [
     "src/**/*.ts"
