@@ -1,5 +1,12 @@
 # @firtoz/openai-wrappers
 
+## 3.0.0
+
+### Major Changes
+
+- 448d548: Use minimum node 17
+- 960d918: Initial work to support openapi based plugins
+
 ## 2.0.0
 
 ### Major Changes
