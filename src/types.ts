@@ -15,8 +15,27 @@ export type CompletionError = {
 };
 
 export type ModelName = 'text-davinci-003'
-export type ChatModelName = 'gpt-3.5-turbo-0301' | 'gpt-3.5-turbo' | 'gpt-3.5-turbo-0613' | 'gpt-3.5-turbo-16k'
-    | 'gpt-4' | 'gpt-4-32k' | 'gpt-4-0613' | 'gpt-4-32k-0613'
+
+export const ChatModelNames = [
+    'gpt-3.5-turbo',
+    'gpt-3.5-turbo-0301',
+    'gpt-3.5-turbo-0613',
+    'gpt-3.5-turbo-16k',
+    'gpt-4',
+    'gpt-4-0613',
+    'gpt-4-32k',
+    'gpt-4-32k-0613',
+] as const;
+
+export type ChatModelName = typeof ChatModelNames[number];
+
+export const FunctionModelNames = [
+    'gpt-3.5-turbo-0613',
+    'gpt-4-0613',
+    'gpt-4-32k-0613',
+] as const;
+
+export type FunctionModelName = typeof FunctionModelNames[number];
 
 export type CompletionParams = Omit<CreateCompletionRequest, 'prompt' | 'model'> & {
     model: ModelName,

@@ -1,0 +1,371 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Search",
+    "version": "0.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:4000"
+    }
+  ],
+  "paths": {
+    "/search": {
+      "get": {
+        "operationId": "search",
+        "tags": [
+          ""
+        ],
+        "summary": "Searches the web for the given query.",
+        "parameters": [
+          {
+            "description": "Query to search for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Query to search for",
+              "example": "who is the current monarch of the united kingdom"
+            },
+            "name": "query",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "query": {
+                          "type": "string"
+                        },
+                        "webPages": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "array"
+                            },
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "object"
+                                },
+                                "properties": {
+                                  "type": "object",
+                                  "properties": {
+                                    "title": {
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "snippet": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "title",
+                                    "url",
+                                    "snippet"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "properties"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "items"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "query",
+                        "webPages"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "properties"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/news": {
+      "get": {
+        "operationId": "news",
+        "tags": [
+          ""
+        ],
+        "summary": "Checks the news for the given parameters, including keywords.\nFor the latest, sort by published_desc. For each result, include a brief summary of the description.\nPrefer to use all of the parameters to narrow down the search.",
+        "parameters": [
+          {
+            "description": "Query to search for",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Query to search for",
+              "example": "virus,-corona"
+            },
+            "name": "keywords",
+            "in": "query"
+          },
+          {
+            "description": "Sources to search for",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sources to search for",
+              "example": "cnn,bbc"
+            },
+            "name": "sources",
+            "in": "query"
+          },
+          {
+            "description": "Categories to search for, e.g. business,-sports",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Categories to search for, e.g. business,-sports",
+              "example": "business,-sports",
+              "enum": [
+                "general",
+                "business",
+                "entertainment",
+                "health",
+                "science",
+                "sports",
+                "technology"
+              ]
+            },
+            "name": "categories",
+            "in": "query"
+          },
+          {
+            "description": "Countries to search for. Use 2-letter country short codes.\nExample: To include Australia, but exclude the US: au,-us",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Countries to search for. Use 2-letter country short codes.\nExample: To include Australia, but exclude the US: au,-us",
+              "example": "au,-us"
+            },
+            "name": "countries",
+            "in": "query"
+          },
+          {
+            "description": "Languages to search for",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Languages to search for",
+              "example": "en,-de"
+            },
+            "name": "languages",
+            "in": "query"
+          },
+          {
+            "description": "Sort to search for",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sort to search for",
+              "example": "published_desc",
+              "enum": [
+                "published_desc",
+                "published_asc",
+                "popularity"
+              ]
+            },
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "description": "Offset to search for",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Offset to search for",
+              "example": "0"
+            },
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "description": "Limit to search for",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Limit to search for",
+              "example": "5"
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "query": {
+                          "type": "string"
+                        },
+                        "webPages": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "array"
+                            },
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "object"
+                                },
+                                "properties": {
+                                  "type": "object",
+                                  "properties": {
+                                    "title": {
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "snippet": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "title",
+                                    "url",
+                                    "snippet"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "properties"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "items"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "query",
+                        "webPages"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "properties"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/summarize": {
+      "get": {
+        "operationId": "summarize",
+        "tags": [
+          ""
+        ],
+        "summary": "Summarizes a given url.",
+        "parameters": [
+          {
+            "description": "Url to summarize",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Url to summarize",
+              "example": "https://www.nytimes.com/2023/02/04/us/politics/chinese-spy-balloon-shootdown.html"
+            },
+            "name": "url",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "summary": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            }
+                          },
+                          "required": [
+                            "type"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "summary"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "properties"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

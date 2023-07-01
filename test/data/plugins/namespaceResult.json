@@ -1,0 +1,225 @@
+{
+  "url": "one.json",
+  "manifest": {
+    "schema_version": "v1",
+    "name_for_model": "QueryAnything",
+    "name_for_human": "QueryAnything",
+    "description_for_model": "A tool to ask a question to any webpage. Given a link, you can ask questions to it.",
+    "description_for_human": "A tool to ask a question to any webpage.",
+    "auth": {
+      "type": "none"
+    },
+    "api": {
+      "type": "openapi",
+      "url": "openapi.json",
+      "has_user_authentication": false
+    },
+    "logo_url": "https://media.discordapp.net/attachments/1088203740378574878/1100488839123972116/Ephemeros_To-do_app_logo_concept_8803460c-1072-405d-b14b-016c6a52dc8f.png?width=993&height=993",
+    "contact_email": "hello@example.com",
+    "legal_info_url": "https://example.com"
+  },
+  "parsedYaml": {
+    "openapi": "3.0.2",
+    "info": {
+      "title": "QueryAnything",
+      "version": "0.0.0"
+    },
+    "paths": {
+      "/search": {
+        "get": {
+          "operationId": "search",
+          "tags": [
+            ""
+          ],
+          "summary": "Searches the web for the given query.",
+          "parameters": [
+            {
+              "description": "The URL for the search engine to use",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "description": "The URL for the search engine to use",
+                "example": "https://news.ycombinator.com/"
+              },
+              "name": "url",
+              "in": "query"
+            },
+            {
+              "description": "Query to search for in the url",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "description": "Query to search for in the url",
+                "example": "are there any new posts about web development today"
+              },
+              "name": "query",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "example": "object"
+                      },
+                      "properties": {
+                        "type": "object",
+                        "properties": {
+                          "response": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "response"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "properties"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "rebuiltPaths": {
+    "/search": {
+      "get": {
+        "operationId": "search",
+        "parameters": [
+          {
+            "description": "The URL for the search engine to use",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The URL for the search engine to use",
+              "example": "https://news.ycombinator.com/"
+            },
+            "name": "url",
+            "in": "query"
+          },
+          {
+            "description": "Query to search for in the url",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Query to search for in the url",
+              "example": "are there any new posts about web development today"
+            },
+            "name": "query",
+            "in": "query"
+          }
+        ]
+      }
+    }
+  },
+  "operationInfo": {
+    "search": {
+      "method": "get",
+      "path": "/search",
+      "operation": {
+        "operationId": "search",
+        "tags": [
+          ""
+        ],
+        "summary": "Searches the web for the given query.",
+        "parameters": [
+          {
+            "description": "The URL for the search engine to use",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The URL for the search engine to use",
+              "example": "https://news.ycombinator.com/"
+            },
+            "name": "url",
+            "in": "query"
+          },
+          {
+            "description": "Query to search for in the url",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Query to search for in the url",
+              "example": "are there any new posts about web development today"
+            },
+            "name": "query",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "response": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "response"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "properties"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "namespaceInfo": {
+    "name": "QueryAnything",
+    "functions": [
+      {
+        "name": "search",
+        "description": "Searches the web for the given query.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "The URL for the search engine to use",
+              "example": "https://news.ycombinator.com/"
+            },
+            "query": {
+              "type": "string",
+              "description": "Query to search for in the url",
+              "example": "are there any new posts about web development today"
+            }
+          },
+          "required": [
+            "url",
+            "query"
+          ]
+        }
+      }
+    ]
+  }
+}

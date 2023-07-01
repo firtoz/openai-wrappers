@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "QueryAnything",
+  "name_for_human": "QueryAnything",
+  "description_for_model": "A tool to ask a question to any webpage. Given a link, you can ask questions to it.",
+  "description_for_human": "A tool to ask a question to any webpage.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "openapi.json",
+    "has_user_authentication": false
+  },
+  "logo_url": "https://media.discordapp.net/attachments/1088203740378574878/1100488839123972116/Ephemeros_To-do_app_logo_concept_8803460c-1072-405d-b14b-016c6a52dc8f.png?width=993&height=993",
+  "contact_email": "hello@example.com",
+  "legal_info_url": "https://example.com"
+}
