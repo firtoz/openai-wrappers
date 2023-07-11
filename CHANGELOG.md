@@ -1,5 +1,11 @@
 # @firtoz/openai-wrappers
 
+## 3.0.1
+
+### Patch Changes
+
+- cfa7d5e: Fix encodeLength for functions
+
 ## 3.0.0
 
 ### Major Changes
