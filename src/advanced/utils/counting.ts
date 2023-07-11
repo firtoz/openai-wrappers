@@ -44,7 +44,7 @@ export const numTokensFromMessage = (message: ChatCompletionRequestMessage, mode
         if (key === 'name') {
             numTokens += encodeLength(value) + tokensPerName;
         } else {
-            numTokens += encodeLength(value);
+            numTokens += encodeLength(typeof value === 'string' ? value : JSON.stringify(value));
         }
     }
 
