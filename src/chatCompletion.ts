@@ -242,18 +242,29 @@ export async function getChatCompletionAdvanced(
                 }
 
                 try {
-                    const parsed = JSON.parse(message) as ChatStreamDelta;
+                    const parsed = JSON.parse(message) as (ChatStreamDelta | CompletionError);
 
-                    onProgress(parsed);
+                    if ((parsed as CompletionError).error) {
+                        streamResponse.off('data', handleOnData);
+
+                        onError({
+                            type: CompletionErrorType.Unknown,
+                            message: `Error: ${JSON.stringify((parsed as CompletionError).error)}`,
+                        });
+
+                        return;
+                    }
+
+                    onProgress(parsed as ChatStreamDelta);
                 } catch (error) {
+                    streamResponse.off('data', handleOnData);
+
                     console.error('Could not JSON parse stream message', message, error);
 
                     onError({
                         type: CompletionErrorType.Unknown,
                         message: 'Cannot parse response.',
                     });
-
-                    streamResponse.off('data', handleOnData);
                 }
             }
         };

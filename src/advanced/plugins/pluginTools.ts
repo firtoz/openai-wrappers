@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import {ChatCompletionOptions, ChatStreamDelta, FunctionModelName} from "../../types";
 import {OpenAPIV3 as OpenAPIVersion} from "openapi-types";
 import {AIPluginManifest} from "chatgpt-plugin";
