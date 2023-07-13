@@ -53,16 +53,19 @@ export async function getChatCompletionAdvanced(
         messages,
     };
 
-    let numRetries = 0;
+    const completionState = {
+        numRetries: 0,
+        errorHandled: false,
+    };
+
     const maxRetries = 3;
 
-    let errorHandled = false;
     const onError = (error: CustomCompletionError): void => {
-        if (errorHandled) {
+        if (completionState.errorHandled) {
             return;
         }
 
-        errorHandled = true;
+        completionState.errorHandled = true;
 
         handleOnError(error);
     }
@@ -139,8 +142,8 @@ export async function getChatCompletionAdvanced(
                 // ignore
             }
 
-            if (numRetries < maxRetries) {
-                numRetries++;
+            if (completionState.numRetries < maxRetries) {
+                completionState.numRetries++;
                 continue;
             }
 
@@ -199,79 +202,97 @@ export async function getChatCompletionAdvanced(
             }
         }
 
-        let buffer = '';
+        const streamState = {
+            buffer: '',
+            shouldRetry: false,
+        };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const handleOnData = (data: any) => {
-            if (signal?.aborted) {
-                streamResponse.off('data', handleOnData);
+        await new Promise<void>((resolve) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const handleOnData = (data: any) => {
+                if (signal?.aborted) {
+                    streamResponse.off('data', handleOnData);
 
-                onError({
-                    type: CompletionErrorType.Aborted,
-                    message: 'Stream aborted',
-                });
+                    onError({
+                        type: CompletionErrorType.Aborted,
+                        message: 'Stream aborted',
+                    });
 
-                return;
-            }
-
-            if (errorHandled) {
-                streamResponse.off('data', handleOnData);
-
-                return;
-            }
-
-            buffer += data.toString();
-
-            while (true) {
-                const lineIndex = buffer.indexOf('\n');
-                if (lineIndex === -1) {
-                    break;
+                    return;
                 }
 
-                const line = buffer.slice(0, lineIndex);
-                buffer = buffer.slice(lineIndex + 1);
+                if (completionState.errorHandled) {
+                    streamResponse.off('data', handleOnData);
 
-                if (line.trim().length === 0) {
-                    continue;
+                    return;
                 }
 
-                const message = line.replace(/^data: /, '');
-                if (message === '[DONE]') {
-                    // resolve();
-                    continue;
-                }
+                streamState.buffer += data.toString();
 
-                try {
-                    const parsed = JSON.parse(message) as (ChatStreamDelta | CompletionError);
+                while (true) {
+                    const lineIndex = streamState.buffer.indexOf('\n');
+                    if (lineIndex === -1) {
+                        // no more lines
+                        break;
+                    }
 
-                    if ((parsed as CompletionError).error) {
+                    const line = streamState.buffer.slice(0, lineIndex);
+                    streamState.buffer = streamState.buffer.slice(lineIndex + 1);
+
+                    if (line.trim().length === 0) {
+                        continue;
+                    }
+
+                    const message = line.replace(/^data: /, '');
+                    if (message === '[DONE]') {
+                        // resolve();
+                        continue;
+                    }
+
+                    try {
+                        const parsed = JSON.parse(message) as (ChatStreamDelta | CompletionError);
+
+                        if ((parsed as CompletionError).error) {
+                            streamResponse.off('data', handleOnData);
+
+                            if (completionState.numRetries < maxRetries) {
+                                completionState.numRetries++;
+                                streamState.shouldRetry = true;
+                                resolve();
+                                return;
+                            }
+
+                            onError({
+                                type: CompletionErrorType.Unknown,
+                                message: `Error: ${JSON.stringify((parsed as CompletionError).error)}`,
+                            });
+
+                            return;
+                        }
+
+                        onProgress(parsed as ChatStreamDelta);
+                    } catch (error) {
                         streamResponse.off('data', handleOnData);
+
+                        console.error('Could not JSON parse stream message', message, error);
+
+                        if (completionState.numRetries < maxRetries) {
+                            completionState.numRetries++;
+                            streamState.shouldRetry = true;
+                            resolve();
+                            return;
+                        }
 
                         onError({
                             type: CompletionErrorType.Unknown,
-                            message: `Error: ${JSON.stringify((parsed as CompletionError).error)}`,
+                            message: 'Cannot parse response.',
                         });
-
-                        return;
                     }
-
-                    onProgress(parsed as ChatStreamDelta);
-                } catch (error) {
-                    streamResponse.off('data', handleOnData);
-
-                    console.error('Could not JSON parse stream message', message, error);
-
-                    onError({
-                        type: CompletionErrorType.Unknown,
-                        message: 'Cannot parse response.',
-                    });
                 }
-            }
-        };
+            };
 
-        streamResponse.on('data', handleOnData);
+            streamResponse.on('data', handleOnData);
 
-        await new Promise<void>((resolve) => {
             const handleOnError = async (err: Error) => {
                 streamResponse.off('data', handleOnData);
 
@@ -287,6 +308,14 @@ export async function getChatCompletionAdvanced(
                 }
 
                 console.log('STREAM error', err);
+
+                if (completionState.numRetries < maxRetries) {
+                    completionState.numRetries++;
+                    streamState.shouldRetry = true;
+                    resolve();
+
+                    return;
+                }
 
                 onError({
                     type: CompletionErrorType.Unknown,
@@ -304,6 +333,10 @@ export async function getChatCompletionAdvanced(
 
             streamResponse.once('end', handleOnEnd);
         });
+
+        if (streamState.shouldRetry) {
+            continue;
+        }
 
         return;
     }
