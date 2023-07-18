@@ -1,5 +1,12 @@
 # @firtoz/openai-wrappers
 
+## 3.0.2
+
+### Patch Changes
+
+- e224cfc: Improve error handling
+- 2802579: Allow gpt-3.5-turbo-16k-0613
+
 ## 3.0.1
 
 ### Patch Changes
