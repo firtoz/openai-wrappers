@@ -2,7 +2,7 @@ import {CreateChatCompletionRequest, CreateCompletionRequest} from "openai";
 import {
     ChatCompletionResponseMessage,
     ChatCompletionResponseMessageRoleEnum,
-    CreateCompletionResponseUsage
+    CreateCompletionResponseUsage,
 } from "openai/api";
 
 export type CompletionError = {
@@ -21,6 +21,7 @@ export const ChatModelNames = [
     'gpt-3.5-turbo-0301',
     'gpt-3.5-turbo-0613',
     'gpt-3.5-turbo-16k',
+    'gpt-3.5-turbo-16k-0613',
     'gpt-4',
     'gpt-4-0613',
     'gpt-4-32k',
@@ -31,6 +32,7 @@ export type ChatModelName = typeof ChatModelNames[number];
 
 export const FunctionModelNames = [
     'gpt-3.5-turbo-0613',
+    'gpt-3.5-turbo-16k-0613',
     'gpt-4-0613',
     'gpt-4-32k-0613',
 ] as const;
