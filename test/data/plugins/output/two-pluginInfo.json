@@ -923,7 +923,7 @@
       },
       {
         "name": "news",
-        "description": "Checks the news for the given parameters, including keywords.\nFor the latest, sort by published_desc. For each result, include a brief summary of the description.\nPrefer to use all of the parameters to narrow down the search.",
+        "description": "Checks the news for the given parameters, including keywords. For the latest, sort by published_desc. For each result, include a brief summary of the description. Prefer to use all of the parameters to narrow down the search.",
         "parameters": {
           "type": "object",
           "properties": {
@@ -953,7 +953,7 @@
             },
             "countries": {
               "type": "string",
-              "description": "Countries to search for. Use 2-letter country short codes.\nExample: To include Australia, but exclude the US: au,-us",
+              "description": "Countries to search for. Use 2-letter country short codes. Example: To include Australia, but exclude the US: au,-us",
               "example": "au,-us"
             },
             "languages": {

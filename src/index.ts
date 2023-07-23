@@ -5,9 +5,13 @@ export {
     CustomCompletionError,
     ChatCompletionOptions,
     ChatModelName,
-    ModelName,
+    TextCompletionModelName,
     ChatStreamDelta,
     ChatStreamDeltaChoice,
+    SixteenthKModelName,
+    SixteenthKModelNames,
+    FunctionModelName,
+    FunctionModelNames,
 } from './types';
 
 export {

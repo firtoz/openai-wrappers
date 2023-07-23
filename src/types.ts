@@ -14,33 +14,43 @@ export type CompletionError = {
     }
 };
 
-export type ModelName = 'text-davinci-003'
+export type TextCompletionModelName = 'text-davinci-003';
 
-export const ChatModelNames = [
-    'gpt-3.5-turbo',
-    'gpt-3.5-turbo-0301',
-    'gpt-3.5-turbo-0613',
-    'gpt-3.5-turbo-16k',
-    'gpt-3.5-turbo-16k-0613',
-    'gpt-4',
-    'gpt-4-0613',
-    'gpt-4-32k',
-    'gpt-4-32k-0613',
-] as const;
+export const FunctionModelName = {
+    'gpt-3.5-turbo-0613': 'gpt-3.5-turbo-0613',
+    'gpt-3.5-turbo-16k-0613': 'gpt-3.5-turbo-16k-0613',
+    'gpt-4-0613': 'gpt-4-0613',
+    'gpt-4-32k-0613': 'gpt-4-32k-0613',
+} as const;
 
-export type ChatModelName = typeof ChatModelNames[number];
+export type FunctionModelName = typeof FunctionModelName[keyof typeof FunctionModelName];
 
-export const FunctionModelNames = [
-    'gpt-3.5-turbo-0613',
-    'gpt-3.5-turbo-16k-0613',
-    'gpt-4-0613',
-    'gpt-4-32k-0613',
-] as const;
+export const FunctionModelNames = Object.values(FunctionModelName) as FunctionModelName[];
 
-export type FunctionModelName = typeof FunctionModelNames[number];
+export const ChatModelName = {
+    ...FunctionModelName,
+    'gpt-3.5-turbo': 'gpt-3.5-turbo',
+    'gpt-3.5-turbo-0301': 'gpt-3.5-turbo-0301',
+    'gpt-3.5-turbo-16k': 'gpt-3.5-turbo-16k',
+    'gpt-4': 'gpt-4',
+    'gpt-4-32k': 'gpt-4-32k',
+} as const;
+
+export const SixteenthKModelName = {
+    'gpt-3.5-turbo-16k': 'gpt-3.5-turbo-16k',
+    'gpt-3.5-turbo-16k-0613': 'gpt-3.5-turbo-16k-0613',
+} as const;
+
+export type SixteenthKModelName = typeof SixteenthKModelName[keyof typeof SixteenthKModelName];
+
+export const SixteenthKModelNames = Object.values(SixteenthKModelName) as SixteenthKModelName[];
+
+export type ChatModelName = typeof ChatModelName[keyof typeof ChatModelName];
+
+export const ChatModelNames = Object.values(ChatModelName) as ChatModelName[];
 
 export type CompletionParams = Omit<CreateCompletionRequest, 'prompt' | 'model'> & {
-    model: ModelName,
+    model: TextCompletionModelName,
 };
 
 export enum CompletionErrorType {
