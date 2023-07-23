@@ -1,5 +1,11 @@
 # @firtoz/openai-wrappers
 
+## 3.0.3
+
+### Patch Changes
+
+- f4a1e56: Improve model typing
+
 ## 3.0.2
 
 ### Patch Changes
