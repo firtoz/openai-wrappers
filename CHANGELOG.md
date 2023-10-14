@@ -1,5 +1,11 @@
 # @firtoz/openai-wrappers
 
+## 3.1.0
+
+### Minor Changes
+
+- f3404dc: Use a new tokenizer function
+
 ## 3.0.3
 
 ### Patch Changes
