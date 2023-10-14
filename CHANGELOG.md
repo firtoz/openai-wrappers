@@ -1,5 +1,11 @@
 # @firtoz/openai-wrappers
 
+## 3.1.1
+
+### Patch Changes
+
+- 81a1aa4: Fix imports
+
 ## 3.1.0
 
 ### Minor Changes
