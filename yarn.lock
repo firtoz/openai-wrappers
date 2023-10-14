@@ -511,7 +511,7 @@ __metadata:
     cross-env: ^7.0.3
     dotenv: ^16.3.1
     eslint: ^8.45.0
-    gpt3-tokenizer: ^1.1.5
+    gpt-tokenizer: ^2.1.2
     lodash: ^4.17.21
     nodemon: ^3.0.1
     openai: ^3.3.0
@@ -1220,13 +1220,6 @@ __metadata:
     call-bind: ^1.0.2
     is-array-buffer: ^3.0.1
   checksum: 044e101ce150f4804ad19c51d6c4d4cfa505c5b2577bd179256e4aa3f3f6a0a5e9874c78cd428ee566ac574c8a04d7ce21af9fe52e844abfdccb82b33035a7c3
-  languageName: node
-  linkType: hard
-
-"array-keyed-map@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "array-keyed-map@npm:2.1.3"
-  checksum: 53b45671922bbe7a7eb34950887fd4b1ba4154b0e0002523efa8fb352b320aaa6f798e4d7af151fc8dd4f3365996974f40f141e201d9aae90ea8b3383daf98f8
   languageName: node
   linkType: hard
 
@@ -2565,12 +2558,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gpt3-tokenizer@npm:^1.1.5":
-  version: 1.1.5
-  resolution: "gpt3-tokenizer@npm:1.1.5"
+"gpt-tokenizer@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "gpt-tokenizer@npm:2.1.2"
   dependencies:
-    array-keyed-map: ^2.1.3
-  checksum: 9d458f1d57fc381f7e348780c90aa25758a224b2b06424ea255c6f0693b16d06eaaa4f4a26635d916cd6131ed47eba7f66bde81190a5f5bc606aa9a97bacb51a
+    rfc4648: ^1.5.2
+  checksum: 04a53d5466d70d8b779a87c15db1390d5cefabb301ab9c4c0fe5d3b50f330e01da70567104879ad97fbd71c68dbe9b535eaaa9e8a7fae0d0e67cf846bdb5ee93
   languageName: node
   linkType: hard
 
@@ -4233,6 +4226,13 @@ __metadata:
   version: 1.0.4
   resolution: "reusify@npm:1.0.4"
   checksum: c3076ebcc22a6bc252cb0b9c77561795256c22b757f40c0d8110b1300723f15ec0fc8685e8d4ea6d7666f36c79ccc793b1939c748bf36f18f542744a4e379fcc
+  languageName: node
+  linkType: hard
+
+"rfc4648@npm:^1.5.2":
+  version: 1.5.2
+  resolution: "rfc4648@npm:1.5.2"
+  checksum: bc3d9c4fbfdbbb363c640f9cb56fc01d2e1ca64305b2b6409aaf59cb85c1adecb2545c03deee8889cce2685e15fb7dd47581665c288e4f45068ffece2642f2e8
   languageName: node
   linkType: hard
 

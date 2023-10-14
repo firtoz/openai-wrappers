@@ -1,23 +1,32 @@
-import GPT3Tokenizer from 'gpt3-tokenizer';
+// noinspection JSUnusedGlobalSymbols
+
+import {
+    encodeChat,
+} from 'gpt-tokenizer'
+
+import {
+    encode as encode35,
+} from 'gpt-tokenizer/esm/model/gpt-3.5-turbo';
+
+import {
+    encode as encode4,
+} from 'gpt-tokenizer/esm/model/gpt-4';
+
 import {
     ChatCompletionRequestMessage,
 } from "openai";
 
 import {ChatModelName, ChatModelNames} from "../../types";
+import {ChatMessage} from "gpt-tokenizer/src/GptEncoding";
+import {ModelName} from "gpt-tokenizer/src/mapping";
 
-let encodeUsageCount = 0;
-let encoder = new GPT3Tokenizer({
-    type: 'gpt3',
-});
+function simplifyModel(model: string): ModelName {
+    return model.startsWith('gpt-4') ? 'gpt-4' : 'gpt-3.5-turbo';
+}
 
-export const numTokensFromMessages = (messages: ChatCompletionRequestMessage[], model: ChatModelName = 'gpt-3.5-turbo-0301'): number => {
+export const numTokensFromMessages = (messages: readonly ChatCompletionRequestMessage[], model: ChatModelName = 'gpt-3.5-turbo-0301'): number => {
     if (ChatModelNames.includes(model)) {
-        let numTokens = 0;
-        for (const message of messages) {
-            numTokens += numTokensFromMessage(message, model);
-        }
-        numTokens += 3; // Every reply is primed with <im_start>assistant<im_sep>
-        return numTokens;
+        return encodeChat(messages as ChatMessage[], simplifyModel(model)).length;
     } else {
         throw new Error(`numTokensFromMessages() is not presently implemented for model ${model}. See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens.`);
     }
@@ -25,43 +34,16 @@ export const numTokensFromMessages = (messages: ChatCompletionRequestMessage[], 
 
 
 export const numTokensFromMessage = (message: ChatCompletionRequestMessage, model: ChatModelName): number => {
-    let tokensPerMessage = 0;
-    let tokensPerName = 0;
-
-    if (model.startsWith('gpt-3.5')) {
-        tokensPerMessage = 4; // Every message follows <im_start>{role/name}\n{content}<im_end>\n
-        tokensPerName = -1; // If there's a name, the role is omitted
-    } else if (model.startsWith('gpt-4')) {
-        tokensPerMessage = 3;
-        tokensPerName = 1;
-    } else {
-        throw new Error(`numTokensFromMessage() is not implemented for model ${model}. See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens.`);
-    }
-
-    let numTokens = tokensPerMessage;
-
-    for (const [key, value] of Object.entries(message)) {
-        if (key === 'name') {
-            numTokens += encodeLength(value) + tokensPerName;
-        } else {
-            numTokens += encodeLength(typeof value === 'string' ? value : JSON.stringify(value));
-        }
-    }
-
-    return numTokens;
+    return encodeChat([message as ChatMessage], simplifyModel(model)).length;
 };
 
-export const encodeLength = (input: string): number => {
-    encodeUsageCount++;
-    if (encodeUsageCount > 1000) {
-        encodeUsageCount = 0;
-        encoder = new GPT3Tokenizer({
-            type: 'gpt3',
-        });
-    }
-
+export const encodeLength = (input: string, model: ChatModelName = 'gpt-3.5-turbo'): number => {
     try {
-        return encoder.encode(input).bpe.length;
+        if(model.startsWith('gpt-4')) {
+            return encode4(input).length;
+        } else {
+            return encode35(input).length;
+        }
     } catch (e) {
         return Math.floor((input || '').split(' ').length * 2.30);
     }
