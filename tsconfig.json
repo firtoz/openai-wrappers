@@ -3,8 +3,9 @@
     "lib": [
       "esnext",
       "dom",
-      "dom.iterable",
+      "dom.iterable"
     ],
+    "baseUrl": "./src",
     "module": "commonjs",
     "target": "ESNext",
     "strict": true,
@@ -16,6 +17,11 @@
     "declaration": true,
     "sourceMap": true,
     "moduleResolution": "node",
+    "paths": {
+      "gpt-tokenizer/model": [
+        "gpt-tokenizer/esm/model"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts"

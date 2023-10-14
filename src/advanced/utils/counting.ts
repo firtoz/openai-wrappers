@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // noinspection JSUnusedGlobalSymbols
 
 import {
@@ -6,11 +7,13 @@ import {
 
 import {
     encode as encode35,
-} from 'gpt-tokenizer/esm/model/gpt-3.5-turbo';
+// @ts-ignore
+} from 'gpt-tokenizer/model/gpt-3.5-turbo';
 
 import {
     encode as encode4,
-} from 'gpt-tokenizer/esm/model/gpt-4';
+// @ts-ignore
+} from 'gpt-tokenizer/model/gpt-4';
 
 import {
     ChatCompletionRequestMessage,
